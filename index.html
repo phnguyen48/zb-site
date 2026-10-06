@@ -717,8 +717,8 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
         <h3>Send Zach a message</h3>
         <p class="sub">All fields marked optional can be skipped.</p>
       </div>
-      <!-- Replace YOUR_FORM_ID with your Formspree form ID (formspree.io → New form). -->
-      <form class="form" id="contactForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate="">
+      <!-- Formspree form ID (formspree.io → New form). -->
+      <form class="form" id="contactForm" action="https://formspree.io/f/maeqqoka" method="POST" novalidate="">
         <input type="hidden" name="_subject" value="New website inquiry for Zach Belman">
         <label class="hp" aria-hidden="true">Leave this empty<input type="text" name="_gotcha" tabindex="-1" autocomplete="off"></label>
         <div class="field">
@@ -1062,7 +1062,7 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
     status.className = 'form-status';
     if (!validate()) return;
     var data = new FormData(form);
-    if (/YOUR_FORM_ID/.test(form.action)){
+    if (/maeqqoka/.test(form.action)){
       // Formspree not configured yet: fall back to the visitor's email app so no lead is lost.
       var body = 'Name: ' + data.get('name') + '\nPhone: ' + (data.get('phone')||'') + '\nEmail: ' + data.get('email') +
                  '\nInterested in: ' + data.get('interested_in') + '\n\n' + (data.get('message')||'');
