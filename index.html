@@ -278,7 +278,7 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
 .yt h4{font:500 18px/1.35 var(--serif);color:var(--navy);margin:16px 0 0}
 .yt:hover h4{color:var(--gold-2)}
 .ig-block{margin-top:96px}
-.ig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:880px;margin:0 auto}
+.ig-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
 .ig{position:relative;display:block;aspect-ratio:4/5;border-radius:12px;overflow:hidden;background:var(--cream)}
 .ig img{width:100%;height:100%;object-fit:cover;transition:transform .5s,filter .3s}
 .ig::after{content:"";position:absolute;inset:0;background:rgba(14,34,64,0);transition:.3s}
@@ -354,7 +354,8 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
   .review{padding:30px 26px}
   .review blockquote{font-size:18px}
   .yt-grid{grid-template-columns:1fr}
-  .ig-grid{gap:8px}
+  .ig-grid{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:42%;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+  .ig-grid .ig{scroll-snap-align:start}
   .form-card{padding:30px 22px}
   .form{grid-template-columns:1fr}
   .form-foot .btn{width:100%}
