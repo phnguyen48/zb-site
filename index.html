@@ -482,8 +482,8 @@ body.book-lock{overflow:hidden}
         <p><a href="https://www.realtrends.com/ranking/best-real-estate-agents-santa-clara-california/individuals-by-volume/" target="_blank" rel="noopener" style="color:inherit">Top 20 agent in Santa Clara by sales volume</a></p>
         <div class="stats">
           <div><b>5.0★</b><span>Zillow rating</span></div>
-          <div><b data-stat="yt-views">77K</b><span>YouTube views</span></div>
-          <div><b data-stat="ig-followers">3,900+</b><span>Instagram followers</span></div>
+          <div><b>77K</b><span>YouTube views</span></div>
+          <div><b>3,900+</b><span>Instagram followers</span></div>
         </div>
       </div>
       <div class="bio reveal in">
@@ -821,7 +821,7 @@ body.book-lock{overflow:hidden}
       <div class="follow-sub reveal in" style="justify-content:center;text-align:center">
         <div>
           <h3 style="justify-content:center">Follow on Instagram</h3>
-          <p class="meta"><a href="https://www.instagram.com/zachbelman/" target="_blank" rel="noopener" style="text-decoration:none">@zachbelman</a> · <span data-stat="ig-followers">3,900+</span> followers</p>
+          <p class="meta"><a href="https://www.instagram.com/zachbelman/" target="_blank" rel="noopener" style="text-decoration:none">@zachbelman</a> · 3,900+ followers</p>
         </div>
       </div>
       <div class="ig-grid reveal in">
@@ -972,17 +972,6 @@ body.book-lock{overflow:hidden}
     }
   });
 
-
-  /* ---------- Social stats (stats.json, refreshed daily by .github/workflows/update-stats.yml) ---------- */
-  function fmtViews(n){ if (n >= 999500) return (n/1e6).toFixed(1).replace(/\.0$/,'') + 'M'; if (n >= 1e3) return Math.round(n/1e3) + 'K'; return String(n); }
-  function fmtFollowers(n){ return n >= 1000 ? (Math.floor(n/100)*100).toLocaleString('en-US') + '+' : String(n); }
-  if (window.fetch && location.protocol !== 'file:'){
-    fetch('stats.json', {cache:'no-cache'}).then(function(r){ if (!r.ok) throw r; return r.json(); }).then(function(st){
-      var v = st.youtube && st.youtube.views, f = st.instagram && st.instagram.followers;
-      if (v) $$('[data-stat="yt-views"]').forEach(function(el){ el.textContent = fmtViews(v); });
-      if (f) $$('[data-stat="ig-followers"]').forEach(function(el){ el.textContent = fmtFollowers(f); });
-    }).catch(function(){ /* keep the numbers written in the page */ });
-  }
 
   /* ---------- Portfolio carousel ---------- */
   var track = $('#track'), prev = $('#prevBtn'), next = $('#nextBtn'), dotsWrap = $('#dots');
