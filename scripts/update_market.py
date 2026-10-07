@@ -2,7 +2,7 @@
 """
 Refreshes market.json from Redfin's free Data Center downloads.
 
-Run by .github/workflows/update-market.yml every 3 days. It reads Redfin's
+Run by .github/workflows/update-market.yml every day. It reads Redfin's
 city- and ZIP-level "Housing Market Tracker" files, keeps the newest numbers
 for every Bay Area city and ZIP code, and writes a small market.json that the
 website reads when it loads.

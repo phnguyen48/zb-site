@@ -626,7 +626,7 @@ body.book-lock{overflow:hidden}
         <a class="btn btn-gold" href="#contact" id="mAskBtn" data-cta="" data-interest="Home valuation / market analysis">Request a market report</a>
       </div>
       <div class="m-foot">
-        <span id="mSource">Source: Redfin, data through September 2026. Updated automatically every 3 days.</span>
+        <span id="mSource">Source: Redfin, data through August 2026. Updated automatically every day.</span>
         <a class="btn btn-gold" href="#contact" id="mReportBtn" data-cta="" data-interest="Home valuation / market analysis" data-message="I'd like a custom market report for Milpitas.">Get a custom report for <span id="mBtnCity">Milpitas</span></a>
       </div>
     </div>
@@ -1006,7 +1006,7 @@ body.book-lock{overflow:hidden}
   buildDots();
 
   /* ---------- Market lookup ---------- */
-  // Live numbers come from market.json, refreshed every 3 days from Redfin by the GitHub job in
+  // Live numbers come from market.json, refreshed every day from Redfin by the GitHub job in
   // .github/workflows/update-market.yml. FALLBACK is only used if that file can't be loaded
   // (e.g. when opening this page straight from your computer).
   var FALLBACK = {updated:'2026-08-31', cities:{
@@ -1031,7 +1031,7 @@ body.book-lock{overflow:hidden}
       chipsWrap.appendChild(b);
     });
     Object.keys(DATA.cities).forEach(function(c){ var o = document.createElement('option'); o.value = c; list.appendChild(o); });
-    els.source.textContent = 'Source: Redfin, data through ' + monthName(DATA.updated) + '. Updated automatically every 3 days.';
+    els.source.textContent = 'Source: Redfin, data through ' + monthName(DATA.updated) + '. Updated automatically every day.';
   }
   function fmtPrice(n){ return n >= 1e6 ? '$' + (n/1e6).toFixed(2) + 'M' : '$' + Math.round(n/1e3) + 'K'; }
   function animate(el, to, fmt){
