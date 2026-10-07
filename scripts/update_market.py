@@ -2,23 +2,30 @@
 """
 Refreshes market.json from Redfin's free Data Center downloads.
 
-Run by .github/workflows/update-market.yml every 3 days. It streams Redfin's
-city- and ZIP-level market tracker files, keeps the newest numbers for every
-Bay Area city and ZIP code, and writes a small market.json that the website
-reads when it loads.
+Run by .github/workflows/update-market.yml every 3 days. It reads Redfin's
+city- and ZIP-level "Housing Market Tracker" files, keeps the newest numbers
+for every Bay Area city and ZIP code, and writes a small market.json that the
+website reads when it loads.
+
+Redfin moved these files in May 2026; the old redfin_market_tracker/*.tsv000.gz
+downloads stopped updating then. The current files (newest rows first) live at
+https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_data_center/
 
 Data: Redfin, a national real estate brokerage (https://www.redfin.com/news/data-center/).
 """
-import csv, gzip, io, json, re, sys, urllib.request
-from datetime import date, datetime
+import csv, io, json, os, re, sys, urllib.request
+from datetime import date
 
-BASE = "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_market_tracker/"
-FILES = {"city": BASE + "city_market_tracker.tsv000.gz",
-         "zip":  BASE + "zip_code_market_tracker.tsv000.gz"}
+BASE = "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_data_center/housing_market/monthly/"
+FILES = {"city": BASE + "all_cities.csv", "zip": BASE + "all_zips.csv"}
 OUT = "market.json"
+HERE = os.path.dirname(os.path.abspath(__file__))
 
-# Redfin tags each city/ZIP with its metro area. Any metro whose name contains
-# one of these words counts as Bay Area (covers all nine counties + Santa Cruz).
+# Cities: the city file has no metro column, so we keep the Bay Area cities listed in
+# scripts/bay_area_cities.txt (one per line; add a line to include another city).
+with open(os.path.join(HERE, "bay_area_cities.txt")) as f:
+    BAY_AREA_CITIES = {l.strip() for l in f if l.strip()}
+# ZIP codes: kept when their METRO column contains one of these names.
 BAY_AREA_METROS = ["San Jose", "San Francisco", "Oakland", "San Rafael", "Fremont",
                    "Hayward", "Santa Rosa", "Vallejo", "Napa", "Santa Cruz"]
 MIN_SALES = 3          # skip places with too few sales to be meaningful
@@ -28,89 +35,81 @@ csv.field_size_limit(10**9)
 
 
 def num(v):
+    v = (v or "").strip()
+    if v in ("", "NA", "null", "None"):
+        return None
     try:
-        v = (v or "").strip().strip('"')
-        return float(v) if v not in ("", "NA", "null", "None") else None
+        return float(v)
     except ValueError:
         return None
 
 
 def rows(url, local=None):
-    """Yield each row as a dict with lowercase keys, streaming (files are large)."""
+    """Yield each row as a dict keyed by upper-case column name, streaming (files are >1 GB)."""
     raw = open(local, "rb") if local else urllib.request.urlopen(url, timeout=600)
-    text = io.TextIOWrapper(gzip.GzipFile(fileobj=raw), encoding="utf-8", newline="")
-    reader = csv.reader(text, delimiter="\t", quotechar='"')
-    header = [h.strip().strip('"').lower() for h in next(reader)]
+    text = io.TextIOWrapper(raw, encoding="utf-8", newline="")
+    reader = csv.reader(text)
+    header = [h.strip().upper() for h in next(reader)]
     for r in reader:
         yield dict(zip(header, r))
 
 
-def is_bay_area(row):
-    if (row.get("state_code") or "").strip('"') != "CA":
-        return False
-    metro = (row.get("parent_metro_region") or "").strip('"')
-    if not metro:  # column missing in an older format: keep all of California
-        return "parent_metro_region" not in row
-    return any(m in metro for m in BAY_AREA_METROS)
-
-
-def better(new, old):
-    """Prefer the newest period; on a tie prefer the shorter (fresher) window."""
-    if old is None:
-        return True
-    if new["e"] != old["e"]:
-        return new["e"] > old["e"]
-    return new["w"] < old["w"]
-
-
-def collect(kind, local=None):
-    best = {}
+def collect(kind, local=None, full_scan=False):
+    """Newest numbers per place. Rows come newest-first, so we stop once the
+    period gets older than the newest one, unless full_scan is set."""
+    best, newest = {}, None
     for row in rows(FILES[kind], local):
-        g = lambda k: (row.get(k) or "").strip().strip('"')
-        if g("property_type") not in ("All Residential", ""):
+        g = lambda k: (row.get(k) or "").strip()
+        end = g("PERIOD END")[:10]
+        if not re.match(r"\d{4}-\d{2}-\d{2}$", end):
             continue
-        if g("is_seasonally_adjusted").lower() in ("true", "t", "1"):
-            continue
-        if not is_bay_area(row):
-            continue
-        price, dom, stl = num(g("median_sale_price")), num(g("median_dom")), num(g("avg_sale_to_list"))
-        above, sold = num(g("sold_above_list")), num(g("homes_sold"))
-        if not price or sold is None or sold < MIN_SALES:
-            continue
-        region = g("region")
-        if kind == "zip":
-            m = re.search(r"\b(\d{5})\b", region)
-            if not m:
+        if newest is None or end > newest:
+            newest = end
+        elif end < newest and not full_scan:
+            break
+        if kind == "city":
+            name = g("REGION NAME")
+            if not name.endswith(", CA"):
+                continue
+            key = name[:-4].strip()
+            if key not in BAY_AREA_CITIES:
+                continue
+        else:
+            m = re.search(r"\b(\d{5})\b", g("REGION NAME"))
+            metro = g("METRO")
+            if not m or not any(b in metro for b in BAY_AREA_METROS):
                 continue
             key = m.group(1)
-        else:
-            key = g("city") or region.split(",")[0]
-            key = key.strip()
-        try:
-            end = datetime.strptime(g("period_end")[:10], "%Y-%m-%d").date().isoformat()
-        except ValueError:
+        price, sold = num(g("MEDIAN SALE PRICE NSA ($)")), num(g("HOMES SOLD"))
+        if not price or sold is None or sold < MIN_SALES:
             continue
+        dom, stl, above = num(g("MEDIAN DAYS ON MARKET (DAYS)")), num(g("AVERAGE SALE TO LIST RATIO (%)")), num(g("SHARE SOLD ABOVE ORIGINAL LIST (%)"))
         rec = {
             "p": round(price),
             "d": round(dom) if dom is not None else None,
-            "s": round(stl * 100 if stl and stl < 3 else stl, 1) if stl else None,
-            "a": round(above * 100 if above is not None and above <= 1 else above, 1) if above is not None else None,
+            "s": round(stl, 1) if stl is not None else None,
+            "a": round(above, 1) if above is not None else None,
             "n": int(sold),
             "e": end,
-            "w": int(num(g("period_duration")) or 30),
+            "w": 90 if "3" in g("FREQUENCY") else 30,
         }
-        if kind == "zip" and g("parent_metro_region"):
-            rec["m"] = g("parent_metro_region").split(",")[0]
-        if better(rec, best.get(key)):
+        if kind == "zip":
+            rec["m"] = metro.split(",")[0]
+        old = best.get(key)
+        if old is None or rec["e"] > old["e"]:
             best[key] = rec
     return best
 
 
 def main():
-    # Optional: pass local copies for testing -> update_market.py city.tsv.gz zip.tsv.gz
+    # Optional for testing: update_market.py cities.csv zips.csv (local copies)
     local = sys.argv[1:3] if len(sys.argv) >= 3 else (None, None)
     cities = collect("city", local[0])
+    if len(cities) < MIN_CITIES:  # in case Redfin stops sorting newest-first
+        cities = collect("city", local[0], full_scan=True)
     zips = collect("zip", local[1])
+    if len(zips) < MIN_CITIES:
+        zips = collect("zip", local[1], full_scan=True)
     print(f"Bay Area cities: {len(cities)}  ZIP codes: {len(zips)}")
     if len(cities) < MIN_CITIES:
         sys.exit(f"Only {len(cities)} cities found; Redfin's format may have changed. Keeping the old market.json.")
