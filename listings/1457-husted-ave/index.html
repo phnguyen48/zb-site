@@ -19,7 +19,8 @@ window.LISTING = {
   beds: 4, baths: 3, sqft: 2457,
   mls: 'ML82061538',
   // Photo files placed in this folder, in display order, e.g. ['1.jpg','2.jpg','3.jpg']
-  photos: [],
+  photos: ['1.jpg','2.jpg','3.jpg','4.jpg'],
+  floorplan: 'floorplan.jpg',
   openHouses: [
     {label: 'Sat, Oct 10 · 2–4 PM', ends: '2026-10-10T16:00:00-07:00'},
     {label: 'Sun, Oct 11 · 2–4 PM', ends: '2026-10-11T16:00:00-07:00'}
@@ -105,6 +106,7 @@ a{color:inherit}
 .gallery .main{aspect-ratio:3/2}
 .gallery .side{display:grid;grid-template-rows:1fr 1fr;gap:10px}
 .gallery .more{position:relative}
+.gallery .mob{display:none}
 .gallery .more span{position:absolute;right:12px;bottom:12px;background:rgba(14,34,64,.85);color:#fff;font-size:13px;font-weight:600;padding:7px 12px;border-radius:999px;pointer-events:none}
 .nophoto{margin-top:24px;border-radius:18px;background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;aspect-ratio:3/1;display:grid;place-items:center;text-align:center;padding:24px}
 .nophoto b{display:block;font-family:var(--serif);font-weight:400;font-size:clamp(24px,4vw,40px)}
@@ -128,6 +130,7 @@ h2{font-family:var(--serif);font-weight:400;color:var(--navy);font-size:26px;mar
 .details td:first-child{color:var(--muted);width:42%}
 .oh{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px}
 .oh b{color:var(--navy)}
+.fp{width:100%;border-radius:14px;border:1px solid var(--line);background:#fff;cursor:zoom-in;display:block}
 .attrib{margin-top:36px;font-size:13px;color:var(--muted);line-height:1.6}
 /* side card */
 .card{position:sticky;top:92px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px;box-shadow:0 30px 60px -40px rgba(14,34,64,.4)}
@@ -150,6 +153,7 @@ textarea{min-height:88px;resize:vertical}
 .card.done .thanks{display:block}
 .thanks b{display:block;font-family:var(--serif);font-weight:400;font-size:24px;color:var(--navy)}
 /* lightbox */
+.mcta{display:none}
 .lb{position:fixed;inset:0;z-index:900;background:rgba(5,12,25,.92);display:none;align-items:center;justify-content:center}
 .lb.open{display:flex}
 .lb img{max-width:92vw;max-height:86vh;border-radius:8px}
@@ -168,10 +172,16 @@ body.lock{overflow:hidden}
 footer{background:#0A1A33;color:rgba(255,255,255,.6);font-size:13px;text-align:center;padding:28px 20px}
 footer a{color:rgba(255,255,255,.8)}
 @media (max-width:900px){
+  .mcta{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;gap:10px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line)}
+  .mcta .btn{flex:1;white-space:nowrap}
+  .mcta .btn-gold{flex:2}
+  body{padding-bottom:72px}
+  .card.done ~ .mcta{display:none}
   .grid{grid-template-columns:1fr;gap:28px}
   .card{position:static}
   .gallery{grid-template-columns:1fr}
   .gallery .side{display:none}
+  .gallery .mob{display:block}
   .highlights{grid-template-columns:1fr}
   .bar .phone{display:none}
   .book-modal{padding:0}.book-panel{height:100%;border-radius:0}
@@ -204,6 +214,11 @@ footer a{color:rgba(255,255,255,.8)}
       <h2>Highlights</h2>
       <ul class="highlights" id="highlights"></ul>
 
+      <div id="floorplanSec" hidden>
+        <h2>Floor plan</h2>
+        <img class="fp" id="fpImg" alt="Floor plan" loading="lazy">
+      </div>
+
       <h2>Details</h2>
       <table class="details"><tbody id="details"></tbody></table>
 
@@ -232,6 +247,8 @@ footer a{color:rgba(255,255,255,.8)}
     </aside>
   </div>
 </main>
+
+<div class="mcta"><a class="btn btn-gold" href="#card" id="mctaBtn">Request a showing</a><a class="btn btn-outline" href="tel:+14083728777">Call</a></div>
 
 <footer>
   © <span id="yr">2026</span> Zach Belman · Keller Williams Elevate · DRE #02165828 · <a href="/">Home</a> · <a href="/privacy.html">Privacy Policy</a><br>
@@ -276,12 +293,13 @@ footer a{color:rgba(255,255,255,.8)}
   if (upcoming.length){ $('#openHouse').hidden = false; $('#openHouse').innerHTML = '<b>Open house:</b> ' + upcoming.map(function(o){ return o.label; }).join(' · '); }
 
   // Photos (files in this folder). No photos yet -> tasteful banner.
-  var g = $('#gallery'), P = L.photos || [];
-  if (!P.length){
+  var g = $('#gallery'), P = (L.photos || []).slice(), nPhotos = P.length;
+  if (L.floorplan){ P.push(L.floorplan); var fp = $('#fpImg'); fp.src = L.floorplan; fp.dataset.i = P.length - 1; $('#floorplanSec').hidden = false; fp.addEventListener('click', function(){ show(+fp.dataset.i); lb.classList.add('open'); document.body.classList.add('lock'); }); }
+  if (!nPhotos){
     g.innerHTML = '<div class="nophoto"><div><span>' + L.status + ' · ' + (L.neighborhood || L.city) + '</span><b>' + L.address + '</b></div></div>';
   } else {
     var img = function(i, cls){ return '<img src="' + P[i] + '" alt="Photo ' + (i+1) + ' of ' + L.address + '" data-i="' + i + '"' + (cls ? ' class="' + cls + '"' : '') + (i ? ' loading="lazy"' : '') + '>'; };
-    g.innerHTML = '<div class="gallery">' + img(0,'main') + (P.length > 2 ? '<div class="side">' + img(1) + '<div class="more">' + img(2) + (P.length > 3 ? '<span>View all ' + P.length + ' photos</span>' : '') + '</div></div>' : '') + '</div>';
+    g.innerHTML = '<div class="gallery"><div class="more mainwrap">' + img(0,'main') + (P.length > 1 ? '<span class="mob">View all ' + P.length + ' images</span>' : '') + '</div>' + (nPhotos > 2 ? '<div class="side">' + img(1) + '<div class="more">' + img(2) + (P.length > 3 ? '<span>View all ' + P.length + ' images</span>' : '') + '</div></div>' : '') + '</div>';
   }
   // Lightbox
   var lb = $('#lb'), li = 0, lbImg = lb.querySelector('img');
@@ -313,6 +331,8 @@ footer a{color:rgba(255,255,255,.8)}
   });
   zbTrack('view_listing', {name:'ViewContent'}, {listing: L.mls, address: L.address, value: L.price, currency: 'USD', content_type: 'home_listing'});
 
+  document.getElementById('mctaBtn').addEventListener('click', function(e){ e.preventDefault(); document.getElementById('card').scrollIntoView({behavior:'smooth', block:'start'}); setTimeout(function(){ document.getElementById('fName').focus({preventScroll:true}); }, 500); });
+
   // Showing request form -> Formspree (same inbox as the main contact form)
   var form = $('#showForm'), status = $('#formStatus'), btn = $('#submitBtn'), card = $('#card');
   form.addEventListener('submit', function(e){
@@ -322,7 +342,7 @@ footer a{color:rgba(255,255,255,.8)}
     btn.disabled = true; btn.textContent = 'Sending…';
     fetch(form.action, {method:'POST', body:new FormData(form), headers:{'Accept':'application/json'}})
       .then(function(r){ if (!r.ok) throw new Error('Something went wrong.'); })
-      .then(function(){ zbTrack('generate_lead', {name:'Lead'}, {method:'showing_request', listing: L.mls}); card.classList.add('done'); $('#thanks').focus(); })
+      .then(function(){ zbTrack('generate_lead', {name:'Lead'}, {method:'showing_request', listing: L.mls}); card.classList.add('done'); document.querySelector('.mcta').style.display='none'; $('#thanks').focus(); })
       .catch(function(err){ status.innerHTML = err.message + ' Please try again, or call/text <a href="tel:+14083728777">(408) 372-8777</a>.'; status.className = 'status-msg error'; })
       .then(function(){ btn.disabled = false; btn.textContent = 'Request a showing'; });
   });
