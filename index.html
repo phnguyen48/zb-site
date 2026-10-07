@@ -381,6 +381,19 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
   *,*::before,*::after{animation:none!important;transition:none!important}
   .js .reveal{opacity:1;transform:none}
 }
+
+/* Booking (Calendly) popup */
+.book-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(10,26,51,.62);backdrop-filter:blur(3px)}
+.book-modal.open{display:flex}
+.book-panel{position:relative;width:100%;max-width:1000px;height:min(760px,calc(100vh - 48px));background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 40px 80px -30px rgba(0,0,0,.6);display:flex;flex-direction:column}
+.book-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px 14px 24px;border-bottom:1px solid var(--line)}
+.book-head h3{font-family:var(--serif);font-weight:400;font-size:22px;color:var(--navy);margin:0}
+.book-head a{font-size:13px;color:var(--muted);margin-left:auto}
+.book-close{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:22px;line-height:1;cursor:pointer;flex:none}
+.book-close:hover{border-color:var(--navy)}
+.book-panel iframe{flex:1;width:100%;border:0}
+body.book-lock{overflow:hidden}
+@media (max-width:760px){.book-modal{padding:0}.book-panel{height:100%;max-width:none;border-radius:0}.book-head a{display:none}}
 </style>
 </head>
 <body id="top">
@@ -400,7 +413,7 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
         <span class="num">(408) 372-8777</span>
       </a>
       <a class="btn btn-outline" href="#contact" data-cta="">Get in Touch</a>
-      <a class="btn btn-gold" href="#contact" data-cta="" data-interest="Book a call" data-message="I'd like to book a call. Best times to reach me: ">Book a Call</a>
+      <a class="btn btn-gold" href="https://calendly.com/zachbelman/schedule-call-to-discuss-buying-or-selling-real-estate" target="_blank" rel="noopener" data-book="">Book a Call</a>
     </div>
   </div>
 </header>
@@ -416,7 +429,7 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
       <div class="cta-row">
         <a class="btn btn-ghost-light btn-lg" href="#contact" data-cta="">Get in Touch</a>
         <div class="cta-stack">
-          <a class="btn btn-gold btn-lg" href="#contact" data-cta="" data-interest="Book a call" data-message="I'd like to book a call. Best times to reach me: ">
+          <a class="btn btn-gold btn-lg" href="https://calendly.com/zachbelman/schedule-call-to-discuss-buying-or-selling-real-estate" target="_blank" rel="noopener" data-book="">
             Book a Call
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
           </a>
@@ -832,7 +845,7 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
       <h3>Ready when you are. <em>Let's talk.</em></h3>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
         <a class="btn btn-ghost-light" href="#contact" data-cta="">Get in Touch</a>
-        <a class="btn btn-gold" href="#contact" data-cta="" data-interest="Book a call" data-message="I'd like to book a call. Best times to reach me: ">Book a Call</a>
+        <a class="btn btn-gold" href="https://calendly.com/zachbelman/schedule-call-to-discuss-buying-or-selling-real-estate" target="_blank" rel="noopener" data-book="">Book a Call</a>
       </div>
     </div>
     <div class="foot-grid">
@@ -879,6 +892,18 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
   </div>
 </footer>
 
+
+<!-- Booking popup: "Book a Call" buttons open Zach's Calendly here -->
+<div class="book-modal" id="bookModal" role="dialog" aria-modal="true" aria-labelledby="bookTitle" aria-hidden="true">
+  <div class="book-panel">
+    <div class="book-head">
+      <h3 id="bookTitle">Book a call with Zach</h3>
+      <a href="https://calendly.com/zachbelman/schedule-call-to-discuss-buying-or-selling-real-estate" target="_blank" rel="noopener">Open in a new tab ↗</a>
+      <button type="button" class="book-close" id="bookClose" aria-label="Close">×</button>
+    </div>
+    <iframe id="bookFrame" title="Schedule a call with Zach Belman" loading="lazy"></iframe>
+  </div>
+</div>
 <script>
 (function(){
   'use strict';
@@ -915,6 +940,36 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
       e.preventDefault();
       goToForm({interest: el.getAttribute('data-interest'), message: el.getAttribute('data-message')});
     });
+  });
+
+
+  /* ---------- Book a Call → Calendly popup ---------- */
+  var bookModal = $('#bookModal'), bookFrame = $('#bookFrame'), bookLastFocus = null;
+  var CALENDLY = 'https://calendly.com/zachbelman/schedule-call-to-discuss-buying-or-selling-real-estate';
+  function openBooking(){
+    if (!bookFrame.getAttribute('src')) bookFrame.setAttribute('src', CALENDLY + '?hide_gdpr_banner=1&embed_type=Inline&embed_domain=' + encodeURIComponent(location.hostname || 'zachbelman.com'));
+    bookLastFocus = document.activeElement;
+    bookModal.classList.add('open'); bookModal.setAttribute('aria-hidden','false');
+    document.body.classList.add('book-lock');
+    $('#bookClose').focus();
+  }
+  function closeBooking(){
+    bookModal.classList.remove('open'); bookModal.setAttribute('aria-hidden','true');
+    document.body.classList.remove('book-lock');
+    if (bookLastFocus) bookLastFocus.focus();
+  }
+  $$('[data-book]').forEach(function(el){
+    el.addEventListener('click', function(e){ e.preventDefault(); openBooking(); });
+  });
+  $('#bookClose').addEventListener('click', closeBooking);
+  bookModal.addEventListener('click', function(e){ if (e.target === bookModal) closeBooking(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && bookModal.classList.contains('open')) closeBooking(); });
+  // Calendly tells the page when a call is booked; analytics can listen for this later.
+  window.addEventListener('message', function(e){
+    if (e.origin === 'https://calendly.com' && e.data && e.data.event === 'calendly.event_scheduled') {
+      if (window.gtag) window.gtag('event', 'generate_lead', {method: 'calendly'});
+      if (window.fbq) window.fbq('track', 'Schedule');
+    }
   });
 
   /* ---------- Portfolio carousel ---------- */
