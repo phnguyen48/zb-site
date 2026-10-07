@@ -25,6 +25,12 @@ window.LISTING = {
     {label: 'Sat, Oct 10 · 2–4 PM', ends: '2026-10-10T16:00:00-07:00'},
     {label: 'Sun, Oct 11 · 2–4 PM', ends: '2026-10-11T16:00:00-07:00'}
   ],
+  // Short write-up shown under the price (first few lines show; "Read more" opens the rest)
+  story: [
+    'A bright two-story home on a quiet Willow Glen street, built in 1999 and updated throughout. Vaulted ceilings and big windows fill the main living spaces with light, and two fireplaces anchor the formal dining room and the family room.',
+    'The open kitchen has a pantry and a breakfast nook and flows into the family room, where sliding doors open to a fenced, landscaped backyard. A bedroom and full bath on the main floor work well for guests or a home office.',
+    'Upstairs, the primary suite has walk-in closets and a renovated bath with a soaking tub and separate shower, plus two more bedrooms and a shared bath. Solar panels with three backup batteries, central HVAC, a whole-house water softener, an attached 2-car garage and no HOA round it out.'
+  ],
   highlights: [
     'Vaulted ceilings and lots of natural light',
     'Formal dining room with a fireplace',
@@ -82,178 +88,213 @@ window.LISTING = {
   --ink:#16213A; --muted:#5C6678; --line:#E7E3DA; --cream:#F8F6F1; --white:#fff;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
   --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --hh:60px;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.65 var(--sans)}
+body{margin:0;background:#fff;color:var(--ink);font:15.5px/1.6 var(--sans)}
 a{color:inherit}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:12px 22px;font:600 15px/1 var(--sans);text-decoration:none;cursor:pointer;border:1.5px solid transparent;transition:background .2s,border-color .2s,color .2s}
+button{font:inherit}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:13px 22px;font:600 15px/1 var(--sans);text-decoration:none;cursor:pointer;border:1.5px solid transparent;transition:background .2s,border-color .2s,color .2s;white-space:nowrap}
 .btn-gold{background:var(--gold);color:var(--navy)}
 .btn-gold:hover{background:var(--gold-2)}
 .btn-outline{border-color:var(--navy);color:var(--navy);background:transparent}
 .btn-outline:hover{background:var(--navy);color:#fff}
 .btn-block{width:100%}
 /* header */
-.topbar{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line)}
-.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;height:68px}
-.brand{font-family:var(--serif);font-size:24px;color:var(--navy);text-decoration:none}
-.bar .actions{display:flex;gap:10px;align-items:center}
-.bar .phone{color:var(--navy);font-weight:600;text-decoration:none;font-size:15px}
-/* gallery */
-.gallery{margin-top:24px;display:grid;grid-template-columns:2fr 1fr;gap:10px;border-radius:18px;overflow:hidden}
-.gallery img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
-.gallery .main{aspect-ratio:3/2}
-.gallery .side{display:grid;grid-template-rows:1fr 1fr;gap:10px}
-.gallery .more{position:relative}
-.gallery .mob{display:none}
-.gallery .more span{position:absolute;right:12px;bottom:12px;background:rgba(14,34,64,.85);color:#fff;font-size:13px;font-weight:600;padding:7px 12px;border-radius:999px;pointer-events:none}
-.nophoto{margin-top:24px;border-radius:18px;background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;aspect-ratio:3/1;display:grid;place-items:center;text-align:center;padding:24px}
-.nophoto b{display:block;font-family:var(--serif);font-weight:400;font-size:clamp(24px,4vw,40px)}
-.nophoto span{color:var(--gold-soft);font-size:14px;letter-spacing:.08em;text-transform:uppercase}
-/* layout */
-.grid{display:grid;grid-template-columns:1fr 380px;gap:48px;margin:36px 0 72px;align-items:start}
-.status{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);background:#fff;border:1px solid var(--line);padding:6px 12px;border-radius:999px}
-.status i{width:7px;height:7px;border-radius:50%;background:#2E9E5B;display:inline-block}
-h1{font-family:var(--serif);font-weight:400;color:var(--navy);font-size:clamp(30px,4.4vw,46px);line-height:1.1;margin:14px 0 4px}
-.city{color:var(--muted);margin:0}
-.price{font-family:var(--serif);font-size:clamp(30px,4vw,40px);color:var(--navy);margin:18px 0 6px}
-.facts{display:flex;flex-wrap:wrap;gap:10px 28px;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:16px}
-.facts div b{display:block;font-family:var(--serif);font-weight:400;font-size:26px;color:var(--navy);line-height:1.1}
-.facts div span{font-size:13px;color:var(--muted)}
-h2{font-family:var(--serif);font-weight:400;color:var(--navy);font-size:26px;margin:40px 0 12px}
-.highlights{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
-.highlights li{position:relative;padding-left:22px}
-.highlights li:before{content:"";position:absolute;left:0;top:.62em;width:8px;height:8px;border-radius:50%;background:var(--gold)}
-.details{width:100%;border-collapse:collapse;font-size:15px}
-.details td{padding:10px 0;border-bottom:1px solid var(--line);vertical-align:top}
-.details td:first-child{color:var(--muted);width:42%}
-.oh{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.topbar{height:var(--hh);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 24px;border-bottom:1px solid var(--line);background:#fff;position:relative;z-index:20}
+.brand{font-family:var(--serif);font-size:22px;color:var(--navy);text-decoration:none}
+.topbar .actions{display:flex;gap:16px;align-items:center}
+.topbar .phone{color:var(--navy);font-weight:600;text-decoration:none;font-size:14.5px}
+.topbar .btn{padding:10px 18px;font-size:14px}
+/* two-pane layout that fits the screen */
+.pdp{display:grid;grid-template-columns:minmax(0,1fr) 420px;height:calc(100vh - var(--hh));height:calc(100dvh - var(--hh))}
+.media{min-height:0;display:flex;flex-direction:column}
+.photos{flex:1;min-height:0;overflow-y:auto;padding:16px;display:grid;gap:10px;align-content:start;background:var(--cream);scrollbar-width:thin}
+.photos img{width:100%;display:block;border-radius:10px;cursor:zoom-in;background:#e9e5dc}
+.photos .fpimg{background:#fff;border:1px solid var(--line)}
+.photos .cap{font-size:12.5px;color:var(--muted);margin:4px 2px -4px;letter-spacing:.02em}
+.nophoto{border-radius:12px;background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;min-height:60vh;display:grid;place-items:center;text-align:center;padding:24px}
+.nophoto b{display:block;font-family:var(--serif);font-weight:400;font-size:36px}
+.nophoto span{color:var(--gold-soft);font-size:13px;letter-spacing:.1em;text-transform:uppercase}
+.count{display:none}
+/* right panel */
+.panel{border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;background:#fff}
+.panel-scroll{flex:1;overflow-y:auto;padding:26px 28px 18px;scrollbar-width:thin}
+.eyebrow{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.eyebrow i{width:7px;height:7px;border-radius:50%;background:#2E9E5B;display:inline-block}
+h1{font-family:var(--serif);font-weight:400;color:var(--navy);font-size:32px;line-height:1.12;margin:10px 0 2px}
+.city{color:var(--muted);margin:0;font-size:14.5px}
+.price{font-family:var(--serif);font-size:30px;color:var(--navy);margin:14px 0 2px}
+.facts{color:var(--ink);font-size:15px;margin:0}
+.facts b{font-weight:600}
+.oh{margin-top:12px;font-size:14px;background:var(--cream);border-radius:10px;padding:9px 12px}
 .oh b{color:var(--navy)}
-.fp{width:100%;border-radius:14px;border:1px solid var(--line);background:#fff;cursor:zoom-in;display:block}
-.attrib{margin-top:36px;font-size:13px;color:var(--muted);line-height:1.6}
-/* side card */
-.card{position:sticky;top:92px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px;box-shadow:0 30px 60px -40px rgba(14,34,64,.4)}
-.card h3{font-family:var(--serif);font-weight:400;font-size:24px;color:var(--navy);margin:0}
-.card .sub{color:var(--muted);font-size:14px;margin:4px 0 18px}
-.agent{display:flex;gap:12px;align-items:center;margin-bottom:18px}
-.agent .av{width:46px;height:46px;border-radius:50%;background:var(--navy);color:var(--gold);display:grid;place-items:center;font-family:var(--serif);font-size:18px;flex:none}
-.agent small{display:block;color:var(--muted);font-size:13px}
-form{display:grid;gap:12px}
-label{font-size:13px;font-weight:600;color:var(--navy)}
-input,textarea{width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--cream);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;margin-top:4px}
-input:focus,textarea:focus{outline:none;border-color:var(--gold);background:#fff}
-textarea{min-height:88px;resize:vertical}
+.story{margin-top:16px;font-size:15px;color:var(--ink)}
+.story p{margin:0 0 10px}
+.story.clamped{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.linkbtn{background:none;border:0;padding:0;color:var(--navy);font-weight:600;text-decoration:underline;cursor:pointer;font-size:14.5px}
+.cta{display:grid;gap:10px;margin:18px 0 6px}
+details{border-top:1px solid var(--line)}
+details.first{margin-top:16px}
+details.last{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:14px 0;font-weight:600;color:var(--navy)}
+summary::-webkit-details-marker{display:none}
+summary:after{content:"+";font-size:20px;font-weight:400;line-height:1;transition:transform .2s}
+details[open] summary:after{transform:rotate(45deg)}
+details .inner{padding:0 0 16px}
+.highlights{margin:0;padding-left:18px}
+.highlights li{margin:3px 0}
+.dtable{width:100%;border-collapse:collapse;font-size:14px}
+.dtable td{padding:7px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.dtable tr:last-child td{border-bottom:0}
+.dtable td:first-child{color:var(--muted);width:44%;padding-right:10px}
+.attrib{font-size:12px;color:var(--muted);line-height:1.55;margin:16px 0 0}
+.panel-foot{border-top:1px solid var(--line);padding:10px 28px;font-size:11.5px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.panel-foot a{color:var(--muted)}
+/* tour view */
+.view[hidden]{display:none}
+.back{background:none;border:0;padding:0;color:var(--muted);cursor:pointer;font-size:14px;margin-bottom:10px}
+.tour h2{font-family:var(--serif);font-weight:400;color:var(--navy);font-size:28px;margin:0 0 4px}
+.tour .sub{color:var(--muted);font-size:14px;margin:0 0 6px}
+.q{font-size:13.5px;font-weight:600;color:var(--navy);margin:14px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-size:14px;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{border-color:var(--navy);background:var(--navy);color:#fff}
+.tour label{display:block;font-size:13px;font-weight:600;color:var(--navy);margin-top:12px}
+.tour input,.tour textarea{width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--cream);border:1.5px solid transparent;border-radius:10px;padding:11px 13px;margin-top:4px}
+.tour input:focus,.tour textarea:focus{outline:none;border-color:var(--gold);background:#fff}
+.tour textarea{min-height:70px;resize:vertical}
 .hp{position:absolute;left:-9999px}
-.or{text-align:center;color:var(--muted);font-size:13px;margin:4px 0}
-.status-msg{display:none;padding:12px 14px;border-radius:12px;font-size:14px}
+.note{font-size:12.5px;color:var(--muted);margin:12px 0}
+.status-msg{display:none;padding:10px 12px;border-radius:10px;font-size:14px;margin-bottom:10px}
 .status-msg.error{display:block;background:#FFF1EC;color:#9A3412}
-.thanks{display:none;text-align:center;padding:12px 0}
-.card.done form,.card.done .or,.card.done .alt{display:none}
-.card.done .thanks{display:block}
-.thanks b{display:block;font-family:var(--serif);font-weight:400;font-size:24px;color:var(--navy)}
+.thanks{text-align:center;padding:40px 6px}
+.thanks b{display:block;font-family:var(--serif);font-weight:400;font-size:28px;color:var(--navy);margin-bottom:6px}
 /* lightbox */
-.mcta{display:none}
-.lb{position:fixed;inset:0;z-index:900;background:rgba(5,12,25,.92);display:none;align-items:center;justify-content:center}
+.lb{position:fixed;inset:0;z-index:900;background:rgba(5,12,25,.94);display:none;align-items:center;justify-content:center}
 .lb.open{display:flex}
-.lb img{max-width:92vw;max-height:86vh;border-radius:8px}
-.lb button{position:absolute;background:rgba(255,255,255,.12);color:#fff;border:0;width:48px;height:48px;border-radius:50%;font-size:24px;cursor:pointer}
-.lb .x{top:18px;right:18px}.lb .p{left:18px;top:50%}.lb .n{right:18px;top:50%}
-.lb .c{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#fff;font-size:13px}
+.lb img{max-width:92vw;max-height:86vh;border-radius:6px}
+.lb button{position:absolute;background:rgba(255,255,255,.14);color:#fff;border:0;width:48px;height:48px;border-radius:50%;font-size:24px;cursor:pointer}
+.lb .x{top:16px;right:16px}.lb .p{left:16px;top:50%}.lb .n{right:16px;top:50%}
+.lb .c{position:absolute;bottom:16px;left:0;right:0;text-align:center;color:#fff;font-size:13px}
 /* booking popup */
 .book-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(10,26,51,.62)}
 .book-modal.open{display:flex}
-.book-panel{position:relative;width:100%;max-width:1000px;height:min(760px,calc(100vh - 48px));background:#fff;border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.book-panel{width:100%;max-width:1000px;height:min(760px,calc(100vh - 48px));background:#fff;border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
 .book-head{display:flex;align-items:center;gap:12px;padding:14px 18px 14px 24px;border-bottom:1px solid var(--line)}
 .book-head h3{font-family:var(--serif);font-weight:400;font-size:22px;color:var(--navy);margin:0}
 .book-close{margin-left:auto;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:22px;cursor:pointer}
 .book-panel iframe{flex:1;width:100%;border:0}
 body.lock{overflow:hidden}
-footer{background:#0A1A33;color:rgba(255,255,255,.6);font-size:13px;text-align:center;padding:28px 20px}
-footer a{color:rgba(255,255,255,.8)}
+.mcta{display:none}
+/* phones and small tablets: normal page scroll, swipeable photos */
 @media (max-width:900px){
+  .topbar{padding:0 16px}
+  .topbar .phone{display:none}
+  .pdp{display:block;height:auto}
+  .photos{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;gap:8px;padding:12px 16px}
+  .photos img{flex:none;width:86vw;height:58vw;object-fit:cover;scroll-snap-align:center}
+  .photos .fpimg{object-fit:contain}
+  .photos .cap{display:none}
+  .nophoto{min-height:46vw;flex:1}
+  .count{display:block;font-size:12.5px;color:var(--muted);padding:0 16px;background:var(--cream);padding-bottom:10px}
+  .panel{border-left:0}
+  .panel-scroll{overflow:visible;padding:18px 16px 12px}
+  .panel-foot{padding:12px 16px 90px}
   .mcta{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;gap:10px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line)}
-  .mcta .btn{flex:1;white-space:nowrap}
-  .mcta .btn-gold{flex:2}
-  body{padding-bottom:72px}
-  .card.done ~ .mcta{display:none}
-  .grid{grid-template-columns:1fr;gap:28px}
-  .card{position:static}
-  .gallery{grid-template-columns:1fr}
-  .gallery .side{display:none}
-  .gallery .mob{display:block}
-  .highlights{grid-template-columns:1fr}
-  .bar .phone{display:none}
-  .book-modal{padding:0}.book-panel{height:100%;border-radius:0}
+  .mcta .btn{flex:1}.mcta .btn-gold{flex:2}
+  body.touring .mcta{display:none}
+  .book-modal{padding:0}.book-panel{height:100%;max-height:none;border-radius:0}
 }
 </style>
 </head>
 <body>
 <header class="topbar">
-  <div class="wrap bar">
-    <a class="brand" href="/">Zach Belman</a>
-    <div class="actions">
-      <a class="phone" href="tel:+14083728777">(408) 372-8777</a>
-      <a class="btn btn-gold" href="https://calendly.com/zachbelman/schedule-call-to-discuss-buying-or-selling-real-estate" target="_blank" rel="noopener" data-book>Book a Call</a>
-    </div>
+  <a class="brand" href="/">Zach Belman</a>
+  <div class="actions">
+    <a class="phone" href="tel:+14083728777">(408) 372-8777</a>
+    <a class="btn btn-gold" href="https://calendly.com/zachbelman/schedule-call-to-discuss-buying-or-selling-real-estate" target="_blank" rel="noopener" data-book>Book a Call</a>
   </div>
 </header>
 
-<main class="wrap">
-  <div id="gallery"></div>
+<main class="pdp">
+  <div class="media">
+    <section class="photos" id="photos" aria-label="Photos"></section>
+    <div class="count" id="count"></div>
+  </div>
 
-  <div class="grid">
-    <article>
-      <span class="status"><i aria-hidden="true"></i><span id="statusText"></span></span>
-      <h1 id="addr"></h1>
-      <p class="city" id="city"></p>
-      <div class="price" id="price"></div>
-      <div class="facts" id="facts"></div>
-      <div class="oh" id="openHouse" hidden></div>
-
-      <h2>Highlights</h2>
-      <ul class="highlights" id="highlights"></ul>
-
-      <div id="floorplanSec" hidden>
-        <h2>Floor plan</h2>
-        <img class="fp" id="fpImg" alt="Floor plan" loading="lazy">
+  <aside class="panel" id="panel">
+    <div class="panel-scroll" id="panelScroll">
+      <!-- Listing info -->
+      <div class="view" id="infoView">
+        <div class="eyebrow"><i aria-hidden="true"></i><span id="eyebrow"></span></div>
+        <h1 id="addr"></h1>
+        <p class="city" id="city"></p>
+        <div class="price" id="price"></div>
+        <p class="facts" id="facts"></p>
+        <div class="oh" id="openHouse" hidden></div>
+        <div class="story clamped" id="story"></div>
+        <button class="linkbtn" type="button" id="readMore">Read more</button>
+        <div class="cta">
+          <button class="btn btn-gold btn-block" type="button" id="tourBtn">Request a tour</button>
+          <a class="btn btn-outline btn-block" href="https://calendly.com/zachbelman/schedule-call-to-discuss-buying-or-selling-real-estate" target="_blank" rel="noopener" data-book>Book a call with Zach</a>
+        </div>
+        <details class="first" id="detailsBox">
+          <summary>Details</summary>
+          <div class="inner"><table class="dtable"><tbody id="details"></tbody></table></div>
+        </details>
+        <details class="last">
+          <summary>Highlights</summary>
+          <div class="inner"><ul class="highlights" id="highlights"></ul></div>
+        </details>
+        <p class="attrib" id="attrib"></p>
       </div>
 
-      <h2>Details</h2>
-      <table class="details"><tbody id="details"></tbody></table>
-
-      <p class="attrib" id="attrib"></p>
-    </article>
-
-    <aside class="card" id="card">
-      <h3>Want to see it?</h3>
-      <p class="sub">Send a request and Zach will set up a private showing, usually within a day.</p>
-      <div class="agent"><span class="av" aria-hidden="true">ZB</span><div><b>Zach Belman</b><small>REALTOR® · Keller Williams Elevate · DRE #02165828</small></div></div>
-      <form id="showForm" action="https://formspree.io/f/maeqqoka" method="POST" novalidate>
-        <input type="hidden" name="_subject" id="fSubject">
-        <input type="hidden" name="listing" id="fListing">
-        <input type="hidden" name="interested_in" value="Showing request">
-        <label class="hp" aria-hidden="true">Leave empty<input type="text" name="_gotcha" tabindex="-1" autocomplete="off"></label>
-        <label>Name<input name="name" id="fName" autocomplete="name" required></label>
-        <label>Email<input name="email" id="fEmail" type="email" autocomplete="email" required></label>
-        <label>Phone (optional)<input name="phone" type="tel" autocomplete="tel"></label>
-        <label>Message (optional)<textarea name="message" id="fMsg" placeholder="Best days and times for a showing, questions about the home…"></textarea></label>
-        <div class="status-msg" id="formStatus" role="alert"></div>
-        <button class="btn btn-gold btn-block" type="submit" id="submitBtn">Request a showing</button>
-      </form>
-      <p class="or">or</p>
-      <a class="btn btn-outline btn-block alt" href="https://calendly.com/zachbelman/schedule-call-to-discuss-buying-or-selling-real-estate" target="_blank" rel="noopener" data-book>Book a call with Zach</a>
-      <div class="thanks" id="thanks" tabindex="-1"><b>Request sent</b><p>Thanks! Zach will reach out shortly to set up a time.</p></div>
-    </aside>
-  </div>
+      <!-- Tour request -->
+      <div class="view tour" id="tourView" hidden>
+        <button class="back" type="button" id="backBtn">← Back to listing</button>
+        <div id="tourForm">
+          <h2>Request a tour</h2>
+          <p class="sub" id="tourSub"></p>
+          <form id="showForm" action="https://formspree.io/f/maeqqoka" method="POST" novalidate>
+            <input type="hidden" name="_subject" id="fSubject">
+            <input type="hidden" name="listing" id="fListing">
+            <input type="hidden" name="interested_in" value="Tour request">
+            <input type="hidden" name="when" id="fWhen" value="">
+            <input type="hidden" name="has_agent" id="fAgent" value="">
+            <label class="hp" aria-hidden="true">Leave empty<input type="text" name="_gotcha" tabindex="-1" autocomplete="off"></label>
+            <div class="q">When would you like to see it?</div>
+            <div class="chips" data-for="fWhen">
+              <button type="button" class="chip" aria-pressed="false">This week</button>
+              <button type="button" class="chip" aria-pressed="false">Next week</button>
+              <button type="button" class="chip" aria-pressed="false">I'm flexible</button>
+              <button type="button" class="chip" aria-pressed="false">Send details first</button>
+            </div>
+            <div class="q">Are you working with an agent?</div>
+            <div class="chips" data-for="fAgent">
+              <button type="button" class="chip" aria-pressed="false">Yes</button>
+              <button type="button" class="chip" aria-pressed="false">No</button>
+            </div>
+            <label>Name<input name="name" id="fName" autocomplete="name" required></label>
+            <label>Email<input name="email" id="fEmail" type="email" autocomplete="email" required></label>
+            <label>Phone (optional)<input name="phone" type="tel" autocomplete="tel"></label>
+            <label>Anything else? (optional)<textarea name="message" placeholder="Questions about the home, best times to reach you…"></textarea></label>
+            <p class="note">This goes to Zach Belman, who will set up a private tour and can represent you as the buyer. He is not the listing agent.</p>
+            <div class="status-msg" id="formStatus" role="alert"></div>
+            <button class="btn btn-gold btn-block" type="submit" id="submitBtn">Request a tour</button>
+          </form>
+        </div>
+        <div class="thanks" id="thanks" hidden tabindex="-1"><b>Request sent</b><p>Thanks! Zach will reach out shortly to set up a time.</p></div>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <span>© <span id="yr">2026</span> Zach Belman · Keller Williams Elevate · DRE #02165828</span>·<a href="/">Home</a>·<a href="/privacy.html">Privacy</a>
+    </div>
+  </aside>
 </main>
 
-<div class="mcta"><a class="btn btn-gold" href="#card" id="mctaBtn">Request a showing</a><a class="btn btn-outline" href="tel:+14083728777">Call</a></div>
-
-<footer>
-  © <span id="yr">2026</span> Zach Belman · Keller Williams Elevate · DRE #02165828 · <a href="/">Home</a> · <a href="/privacy.html">Privacy Policy</a><br>
-  All information is deemed reliable but not guaranteed and should be independently reviewed and verified.
-</footer>
+<div class="mcta"><button class="btn btn-gold" type="button" id="mctaBtn">Request a tour</button><a class="btn btn-outline" href="tel:+14083728777">Call</a></div>
 
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Photo viewer">
   <button class="x" type="button" aria-label="Close">×</button>
@@ -275,39 +316,65 @@ footer a{color:rgba(255,255,255,.8)}
   var L = window.LISTING, $ = function(s){ return document.querySelector(s); };
   var fmt = function(n){ return '$' + n.toLocaleString('en-US'); };
   document.title = L.address + ', ' + L.city + ' | ' + fmt(L.price) + ' | Zach Belman';
-  $('#statusText').textContent = L.status;
+  $('#eyebrow').textContent = L.status + (L.neighborhood ? ' · ' + L.neighborhood : '');
   $('#addr').textContent = L.address;
-  $('#city').textContent = L.city + ' ' + L.zip + (L.neighborhood ? ' · ' + L.neighborhood : '');
+  $('#city').textContent = L.city + ' ' + L.zip;
   $('#price').textContent = fmt(L.price);
-  $('#facts').innerHTML = [[L.beds,'Beds'],[L.baths,'Baths'],[L.sqft.toLocaleString('en-US'),'Sq ft'],['$' + Math.round(L.price / L.sqft).toLocaleString('en-US'),'Per sq ft']]
-    .map(function(f){ return '<div><b>' + f[0] + '</b><span>' + f[1] + '</span></div>'; }).join('');
+  $('#facts').innerHTML = '<b>' + L.beds + '</b> bd · <b>' + L.baths + '</b> ba · <b>' + L.sqft.toLocaleString('en-US') + '</b> sq ft · ' + fmt(Math.round(L.price / L.sqft)) + '/sq ft';
+  $('#story').innerHTML = (L.story || []).map(function(p){ return '<p>' + p + '</p>'; }).join('');
   $('#highlights').innerHTML = L.highlights.map(function(h){ return '<li>' + h + '</li>'; }).join('');
   $('#details').innerHTML = L.details.map(function(d){ return '<tr><td>' + d[0] + '</td><td>' + d[1] + '</td></tr>'; }).join('');
   $('#attrib').innerHTML = L.attribution;
-  $('#fSubject').value = 'Showing request: ' + L.address;
+  $('#tourSub').textContent = L.address + ', ' + L.city;
+  $('#fSubject').value = 'Tour request: ' + L.address;
   $('#fListing').value = L.address + ', ' + L.city + ' (MLS# ' + L.mls + ')';
   $('#yr').textContent = new Date().getFullYear();
 
-  // Open houses: only show ones that haven't ended yet
-  var now = new Date(), upcoming = (L.openHouses || []).filter(function(o){ return new Date(o.ends) > now; });
-  if (upcoming.length){ $('#openHouse').hidden = false; $('#openHouse').innerHTML = '<b>Open house:</b> ' + upcoming.map(function(o){ return o.label; }).join(' · '); }
+  // Read more / less
+  var story = $('#story'), rm = $('#readMore');
+  rm.onclick = function(){ var c = story.classList.toggle('clamped'); rm.textContent = c ? 'Read more' : 'Read less'; };
+  requestAnimationFrame(function(){ if (story.scrollHeight <= story.clientHeight + 2) rm.hidden = true; });
 
-  // Photos (files in this folder). No photos yet -> tasteful banner.
-  var g = $('#gallery'), P = (L.photos || []).slice(), nPhotos = P.length;
-  if (L.floorplan){ P.push(L.floorplan); var fp = $('#fpImg'); fp.src = L.floorplan; fp.dataset.i = P.length - 1; $('#floorplanSec').hidden = false; fp.addEventListener('click', function(){ show(+fp.dataset.i); lb.classList.add('open'); document.body.classList.add('lock'); }); }
-  if (!nPhotos){
-    g.innerHTML = '<div class="nophoto"><div><span>' + L.status + ' · ' + (L.neighborhood || L.city) + '</span><b>' + L.address + '</b></div></div>';
+  // Open houses that haven't ended yet
+  var now = new Date(), upcoming = (L.openHouses || []).filter(function(o){ return new Date(o.ends) > now; });
+  if (upcoming.length){ $('#openHouse').hidden = false; $('#openHouse').innerHTML = '<b>Open house:</b> ' + upcoming.map(function(o){ return '<span style="white-space:nowrap">' + o.label + '</span>'; }).join(' · '); }
+
+  // Photos: stacked on the left (swipe on phones). Floor plan last.
+  var ph = $('#photos'), P = (L.photos || []).slice(), caps = P.map(function(){ return ''; });
+  if (L.floorplan){ P.push(L.floorplan); caps.push('Floor plan'); }
+  if (!P.length){
+    ph.innerHTML = '<div class="nophoto"><div><span>' + L.status + ' · ' + (L.neighborhood || L.city) + '</span><b>' + L.address + '</b></div></div>';
   } else {
-    var img = function(i, cls){ return '<img src="' + P[i] + '" alt="Photo ' + (i+1) + ' of ' + L.address + '" data-i="' + i + '"' + (cls ? ' class="' + cls + '"' : '') + (i ? ' loading="lazy"' : '') + '>'; };
-    g.innerHTML = '<div class="gallery"><div class="more mainwrap">' + img(0,'main') + (P.length > 1 ? '<span class="mob">View all ' + P.length + ' images</span>' : '') + '</div>' + (nPhotos > 2 ? '<div class="side">' + img(1) + '<div class="more">' + img(2) + (P.length > 3 ? '<span>View all ' + P.length + ' images</span>' : '') + '</div></div>' : '') + '</div>';
+    ph.innerHTML = P.map(function(src, i){
+      return (caps[i] ? '<div class="cap">' + caps[i] + '</div>' : '') + '<img src="' + src + '" alt="' + (caps[i] || ('Photo ' + (i+1))) + ' of ' + L.address + '" data-i="' + i + '"' + (caps[i] ? ' class="fpimg"' : '') + (i > 1 ? ' loading="lazy"' : '') + '>';
+    }).join('');
+    $('#count').textContent = P.length + ' images · swipe to see more';
   }
-  // Lightbox
   var lb = $('#lb'), li = 0, lbImg = lb.querySelector('img');
-  function show(i){ li = (i + P.length) % P.length; lbImg.src = P[li]; lb.querySelector('.c').textContent = (li+1) + ' / ' + P.length; }
-  g.addEventListener('click', function(e){ var t = e.target.closest('img'); if (!t) return; show(+t.dataset.i); lb.classList.add('open'); document.body.classList.add('lock'); });
+  function show(i){ li = (i + P.length) % P.length; lbImg.src = P[li]; lb.querySelector('.c').textContent = (caps[li] ? caps[li] + ' · ' : '') + (li+1) + ' / ' + P.length; }
+  function openLb(i){ show(i); lb.classList.add('open'); document.body.classList.add('lock'); }
   function closeLb(){ lb.classList.remove('open'); document.body.classList.remove('lock'); }
+  ph.addEventListener('click', function(e){ var t = e.target.closest('img'); if (t) openLb(+t.dataset.i); });
   lb.querySelector('.x').onclick = closeLb; lb.querySelector('.p').onclick = function(){ show(li-1); }; lb.querySelector('.n').onclick = function(){ show(li+1); };
   lb.addEventListener('click', function(e){ if (e.target === lb) closeLb(); });
+
+  // Tour view
+  var info = $('#infoView'), tour = $('#tourView'), scroller = $('#panelScroll');
+  function openTour(){
+    info.hidden = true; tour.hidden = false; document.body.classList.add('touring'); scroller.scrollTop = 0;
+    if (window.innerWidth <= 900) $('#panel').scrollIntoView({behavior:'smooth', block:'start'});
+    zbTrack('tour_form_open', {name:'TourFormOpen', custom:true}, {listing: L.mls});
+  }
+  function closeTour(){ tour.hidden = true; info.hidden = false; document.body.classList.remove('touring'); }
+  $('#tourBtn').onclick = openTour; $('#mctaBtn').onclick = openTour; $('#backBtn').onclick = closeTour;
+  document.querySelectorAll('.chips').forEach(function(group){
+    var field = document.getElementById(group.dataset.for);
+    group.addEventListener('click', function(e){
+      var b = e.target.closest('.chip'); if (!b) return;
+      group.querySelectorAll('.chip').forEach(function(c){ c.setAttribute('aria-pressed', String(c === b)); });
+      field.value = b.textContent;
+    });
+  });
 
   // Booking popup (Calendly)
   var bm = $('#bookModal'), bf = $('#bookFrame');
@@ -329,12 +396,11 @@ footer a{color:rgba(255,255,255,.8)}
     var tel = a.getAttribute('href').indexOf('tel:') === 0;
     zbTrack(tel ? 'click_phone' : 'click_email', {name:'Contact'}, {method: tel ? 'phone' : 'email', listing: L.mls});
   });
+  $('#detailsBox').addEventListener('toggle', function(){ if (this.open) zbTrack('listing_details_open', null, {listing: L.mls}); });
   zbTrack('view_listing', {name:'ViewContent'}, {listing: L.mls, address: L.address, value: L.price, currency: 'USD', content_type: 'home_listing'});
 
-  document.getElementById('mctaBtn').addEventListener('click', function(e){ e.preventDefault(); document.getElementById('card').scrollIntoView({behavior:'smooth', block:'start'}); setTimeout(function(){ document.getElementById('fName').focus({preventScroll:true}); }, 500); });
-
-  // Showing request form -> Formspree (same inbox as the main contact form)
-  var form = $('#showForm'), status = $('#formStatus'), btn = $('#submitBtn'), card = $('#card');
+  // Tour request -> Formspree (same inbox as the main contact form)
+  var form = $('#showForm'), status = $('#formStatus'), btn = $('#submitBtn');
   form.addEventListener('submit', function(e){
     e.preventDefault(); status.className = 'status-msg';
     var name = $('#fName'), email = $('#fEmail');
@@ -342,9 +408,12 @@ footer a{color:rgba(255,255,255,.8)}
     btn.disabled = true; btn.textContent = 'Sending…';
     fetch(form.action, {method:'POST', body:new FormData(form), headers:{'Accept':'application/json'}})
       .then(function(r){ if (!r.ok) throw new Error('Something went wrong.'); })
-      .then(function(){ zbTrack('generate_lead', {name:'Lead'}, {method:'showing_request', listing: L.mls}); card.classList.add('done'); document.querySelector('.mcta').style.display='none'; $('#thanks').focus(); })
+      .then(function(){
+        zbTrack('generate_lead', {name:'Lead'}, {method:'tour_request', listing: L.mls, when: $('#fWhen').value, has_agent: $('#fAgent').value});
+        $('#tourForm').hidden = true; $('#backBtn').hidden = true; $('#thanks').hidden = false; $('#thanks').focus();
+      })
       .catch(function(err){ status.innerHTML = err.message + ' Please try again, or call/text <a href="tel:+14083728777">(408) 372-8777</a>.'; status.className = 'status-msg error'; })
-      .then(function(){ btn.disabled = false; btn.textContent = 'Request a showing'; });
+      .then(function(){ btn.disabled = false; btn.textContent = 'Request a tour'; });
   });
 })();
 </script>
