@@ -309,7 +309,12 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
 .foot-cta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;padding:34px 0;margin-bottom:56px;border-bottom:1px solid rgba(255,255,255,.1)}
 .foot-cta h3{color:#fff;font-size:30px}
 .foot-cta h3 em{color:var(--gold-soft)}
-.legal{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:64px;padding:26px 0 30px;border-top:1px solid rgba(255,255,255,.1);font-size:13px;color:rgba(255,255,255,.5)}
+.legal{display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px;margin-top:64px;padding:30px 0 34px;border-top:1px solid rgba(255,255,255,.1);font-size:13px;color:rgba(255,255,255,.5)}
+.legal .disclaimer{margin:0;max-width:640px;line-height:1.6}
+.legal .badges{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 22px}
+.legal .badge{display:inline-flex;align-items:center;gap:8px;color:rgba(255,255,255,.72);font-size:12.5px;font-weight:600;letter-spacing:.02em}
+.legal .badge svg{flex:none}
+.legal .mark{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 4px;border:1.5px solid currentColor;border-radius:3px;font-size:10px;font-weight:800;letter-spacing:.04em;line-height:1}
 .eho{display:inline-flex;align-items:center;gap:8px}
 
 /* Reveal */
@@ -886,8 +891,13 @@ body.book-lock{overflow:hidden}
       </div>
     </div>
     <div class="legal">
-      <span>© <span id="yr">2026</span> Zach Belman · Keller Williams Elevate · DRE #02165828</span>
-      <span class="eho"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21H3z"></path><path d="M8 13h8M8 16.5h8"></path></svg>Equal Housing Opportunity</span>
+      <p class="disclaimer">All information is deemed reliable but not guaranteed and should be independently reviewed and verified.</p>
+      <div class="badges" aria-label="Memberships">
+        <span class="badge"><span class="mark mark-r" aria-hidden="true">R</span>REALTOR®</span>
+        <span class="badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21H3z"></path><path d="M8 13h8M8 16.5h8"></path></svg>Equal Housing Opportunity</span>
+        <span class="badge"><span class="mark" aria-hidden="true">MLS</span>Member, MLSListings</span>
+      </div>
+      <span class="copy">© <span id="yr">2026</span> Zach Belman · Keller Williams Elevate · <span style="white-space:nowrap">DRE #02165828</span></span>
     </div>
   </div>
 </footer>
