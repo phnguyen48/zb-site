@@ -1018,6 +1018,26 @@ body.book-lock{overflow:hidden}
     zbTrack(isTel ? 'click_phone' : 'click_email', {name:'Contact'}, {method: isTel ? 'phone' : 'email'});
   });
 
+
+  /* ---------- Which sections visitors actually see (one "section_view" per section per visit) ---------- */
+  (function(){
+    if (!('IntersectionObserver' in window)) return;
+    var map = [['.hero','Intro'],['#about','About'],['.services','Services'],['#portfolio','Sold Homes'],['#market','Market Lookup'],
+               ['#reviews','Reviews'],['#faq','FAQ'],['#contact','Contact'],['#follow','Videos & Instagram'],['footer','Footer']];
+    var seen = {}, timers = {};
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        var name = en.target.getAttribute('data-track-section'); if (seen[name]) return;
+        // "Seen" = covers at least 40% of the screen (or 40% of a short section) for 1 second
+        var need = Math.min(window.innerHeight, en.boundingClientRect.height) * 0.4;
+        if (en.isIntersecting && en.intersectionRect.height >= need){
+          if (!timers[name]) timers[name] = setTimeout(function(){ seen[name] = true; zbTrack('section_view', null, {section: name}); }, 1000);
+        } else if (timers[name]){ clearTimeout(timers[name]); timers[name] = null; }
+      });
+    }, {threshold:[0, .1, .2, .3, .4, .5, .6, .8, 1]});
+    map.forEach(function(m){ var el = document.querySelector(m[0]); if (el){ el.setAttribute('data-track-section', m[1]); io.observe(el); } });
+  })();
+
   /* ---------- Portfolio carousel ---------- */
   var track = $('#track'), prev = $('#prevBtn'), next = $('#nextBtn'), dotsWrap = $('#dots');
   var cards = $$('.card', track);
@@ -1040,8 +1060,10 @@ body.book-lock{overflow:hidden}
     var idx = Math.round(track.scrollLeft / step());
     $$('button', dotsWrap).forEach(function(d,i){ d.classList.toggle('on', i === idx); });
   }
-  prev.addEventListener('click', function(){ track.scrollBy({left: -step()}); });
-  next.addEventListener('click', function(){ track.scrollBy({left: step()}); });
+  var browsed = false;
+  function trackBrowse(){ if (!browsed){ browsed = true; zbTrack('listings_browse', null, {}); } }
+  prev.addEventListener('click', function(){ track.scrollBy({left: -step()}); trackBrowse(); });
+  next.addEventListener('click', function(){ track.scrollBy({left: step()}); trackBrowse(); });
   track.addEventListener('scroll', updateCarousel, {passive:true});
   track.addEventListener('keydown', function(e){
     if (e.key === 'ArrowRight'){ e.preventDefault(); track.scrollBy({left: step()}); }
@@ -1072,7 +1094,7 @@ body.book-lock{overflow:hidden}
     chipsWrap.innerHTML = ''; list.innerHTML = '';
     FEATURED.filter(function(c){ return DATA.cities[c]; }).forEach(function(c){
       var b = document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=c; b.setAttribute('aria-pressed','false');
-      b.addEventListener('click', function(){ cityInput.value=''; showPlace(c); });
+      b.addEventListener('click', function(){ cityInput.value=''; showPlace(c); trackSearch(c, 'quick_pick'); });
       chipsWrap.appendChild(b);
     });
     Object.keys(DATA.cities).forEach(function(c){ var o = document.createElement('option'); o.value = c; list.appendChild(o); });
@@ -1113,14 +1135,21 @@ body.book-lock{overflow:hidden}
     animate(els.above, d.a, function(v){ return Math.round(v) + '%'; });
     els.stlNote.textContent = d.s == null ? 'Sale price vs. list price' : d.s >= 100 ? 'Selling ' + (d.s-100).toFixed(1) + '% over asking' : 'Selling ' + (100-d.s).toFixed(1) + '% under asking';
   }
+  var lastSearch = '';
+  function trackSearch(name, how){
+    if (name === lastSearch) return; lastSearch = name;
+    var isZip = /^\d{5}$/.test(name), found = !!(isZip ? DATA.zips[name] : DATA.cities[name]);
+    zbTrack('market_search', {name:'MarketSearch', custom:true}, {place: isZip ? 'ZIP ' + name : name, place_type: isZip ? 'zip' : 'city', found: found ? 'yes' : 'no', how: how});
+  }
   function lookup(){
     var q = cityInput.value.trim(); if (!q) return;
     var zip = q.match(/^\d{5}$/);
-    if (zip) return showPlace(zip[0]);
+    if (zip){ showPlace(zip[0]); trackSearch(zip[0], 'search'); return; }
     var names = Object.keys(DATA.cities), lq = q.toLowerCase();
     var key = names.filter(function(c){ return c.toLowerCase() === lq; })[0]
            || names.filter(function(c){ return c.toLowerCase().indexOf(lq) === 0; })[0];
-    showPlace(key || q.replace(/\b\w/g, function(m){return m.toUpperCase();}));
+    var place = key || q.replace(/\b\w/g, function(m){return m.toUpperCase();});
+    showPlace(place); trackSearch(place, 'search');
   }
   cityInput.addEventListener('keydown', function(e){ if (e.key === 'Enter'){ e.preventDefault(); lookup(); } });
   cityInput.addEventListener('change', lookup);
@@ -1139,7 +1168,7 @@ body.book-lock{overflow:hidden}
     btn.addEventListener('click', function(){
       var item = btn.parentNode, open = !item.classList.contains('open');
       $$('.acc-item').forEach(function(i){ i.classList.remove('open'); $('.acc-q', i).setAttribute('aria-expanded','false'); });
-      if (open){ item.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
+      if (open){ item.classList.add('open'); btn.setAttribute('aria-expanded','true'); zbTrack('faq_open', null, {question: btn.textContent.trim().slice(0,100)}); }
     });
   });
 
