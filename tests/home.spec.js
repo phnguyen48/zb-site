@@ -133,8 +133,45 @@ test.describe('Homepage', () => {
     await expect(page.locator('#mEmpty')).toBeVisible();
   });
 
+  test('animations: numbers count up to the right values when scrolled to', async ({ page }) => {
+    const stats = page.locator('#about .stats b');
+    await stats.first().scrollIntoViewIfNeeded();
+    await expect(stats).toHaveText(['5.0★', '77K', '3,900+'], { timeout: 6000 });
+    await page.locator('#mStats').scrollIntoViewIfNeeded();
+    await expect(page.locator('#mPrice')).toHaveText(/^\$[1-9][\d.]*[MK]$/, { timeout: 6000 });
+    await expect(page.locator('#mDom')).toHaveText(/^[1-9]\d* days$/, { timeout: 6000 });
+  });
+
+  test('animations: headline reads normally and the city strip scrolls', async ({ page }) => {
+    await expect(page.locator('h1')).toHaveText("Bay Area real estate, guided by someone who's in it with you.");
+    const track = page.locator('.marquee-track');
+    const x = () => track.evaluate((e) => new DOMMatrix(getComputedStyle(e).transform).m41);
+    const first = await x();
+    await expect.poll(x, { timeout: 4000 }).toBeLessThan(first - 5);
+    await expect(page.locator('.marquee-group:not([aria-hidden]) li').first()).toHaveText('San Jose');
+  });
+
+  test('animations: sold homes, videos and reviews all end up fully visible', async ({ page }) => {
+    for (const sel of ['#track .card', '.yt-grid .yt', '.reviews .review', '.ig-grid .ig']) {
+      const el = page.locator(sel).first();
+      await el.scrollIntoViewIfNeeded();
+      await expect.poll(() => el.evaluate((n) => getComputedStyle(n).opacity), { message: sel, timeout: 6000 }).toBe('1');
+    }
+  });
+
   test('page fits the screen width (no sideways scrolling)', async ({ page }) => {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(1);
   });
+});
+
+test('visitors who turn off motion see everything right away, with no animation', async ({ browser }) => {
+  const ctx = await browser.newContext({ reducedMotion: 'reduce' });
+  const page = await ctx.newPage();
+  await page.route((u) => u.hostname !== '127.0.0.1', (r) => r.abort());
+  await page.goto('/');
+  await expect(page.locator('#about .stats b')).toHaveText(['5.0★', '77K', '3,900+']);
+  expect(await page.locator('.marquee-track').evaluate((e) => getComputedStyle(e).animationName)).toBe('none');
+  expect(await page.locator('#track .card').last().evaluate((n) => getComputedStyle(n).opacity)).toBe('1');
+  await ctx.close();
 });

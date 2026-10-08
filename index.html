@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="js"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Zach Belman, REALTOR® | Keller Williams Elevate | Bay Area Real Estate</title>
@@ -390,10 +390,53 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
 @media (max-width:360px){
   .brand{font-size:18px}
 }
+
+/* ---------- Motion ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes wordUp{from{transform:translateY(105%)}to{transform:none}}
+@keyframes unveil{from{clip-path:inset(100% 0 0 0 round 18px)}to{clip-path:inset(0 0 0 0 round 18px)}}
+@keyframes settle{from{transform:scale(1.14)}to{transform:none}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-25%)}}
+.hero h1 .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.12em;margin-bottom:-.12em}
+.hero h1 .w>span{display:inline-block}
+.js .hero h1 .w>span{animation:wordUp .9s cubic-bezier(.2,.75,.2,1) both;animation-delay:calc(.12s + var(--i) * 55ms)}
+.js .hero .eyebrow{animation:rise .8s ease both}
+.js .hero-sub{animation:rise .9s ease both;animation-delay:calc(.35s + var(--hero-words,10) * 55ms)}
+.js .hero .cta-row{animation:rise .9s ease both;animation-delay:calc(.5s + var(--hero-words,10) * 55ms)}
+.js .hero-trust{animation:rise .9s ease both;animation-delay:calc(.65s + var(--hero-words,10) * 55ms)}
+.js .portrait-frame{animation:unveil 1.3s cubic-bezier(.7,0,.2,1) both .25s}
+.js .portrait-frame img{animation:settle 2.6s cubic-bezier(.2,.7,.2,1) both .25s}
+
+.marquee{display:flex;align-items:center;gap:28px;background:var(--navy-2);color:#fff;border-top:1px solid rgba(255,255,255,.08);padding:0 0 0 24px;overflow:hidden}
+.marquee-label{flex:none;font-size:12px;font-weight:650;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);padding:20px 0}
+.marquee-viewport{flex:1;min-width:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.marquee-track{display:flex;width:max-content;animation:marquee 60s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee-group{display:flex;list-style:none;margin:0;padding:0}
+.marquee-group li{font:italic 400 22px/1 var(--serif);color:rgba(255,255,255,.88);padding:20px 0;white-space:nowrap;transition:color .25s}
+.marquee-group li::after{content:"✦";font-style:normal;font-size:11px;color:var(--gold);margin:0 26px;vertical-align:4px}
+.marquee-group li:hover{color:var(--gold-soft)}
+
+.js .stagger>*{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .8s cubic-bezier(.2,.7,.2,1);transition-delay:calc(var(--i,0) * 90ms)}
+.js .stagger.in>*{opacity:1;transform:none}
+.js .stagger .card-media img,.js .stagger .yt-thumb img,.js .stagger .ig img{transform:scale(1.15);transition:transform 1.4s cubic-bezier(.2,.7,.2,1);transition-delay:calc(var(--i,0) * 90ms)}
+.js .stagger.in .card-media img,.js .stagger.in .yt-thumb img,.js .stagger.in .ig img{transform:none}
+.stats b{font-variant-numeric:tabular-nums}
+.m-stat .v{font-variant-numeric:tabular-nums}
+@media (max-width:640px){
+  .marquee{flex-direction:column;align-items:stretch;gap:0;padding:14px 0 0}
+  .marquee-label{padding:0 20px;font-size:11px}
+  .marquee-group li{font-size:19px;padding:14px 0 16px}
+  .marquee-group li::after{margin:0 20px}
+}
 @media (prefers-reduced-motion:reduce){
   html,.track{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
   .js .reveal{opacity:1;transform:none}
+  .js .stagger>*,.js .stagger img{opacity:1!important;transform:none!important}
+  .marquee-group[aria-hidden]{display:none}
+  .marquee-track{width:auto}
+  .marquee-group{flex-wrap:wrap}
 }
 
 /* Booking (Calendly) popup */
@@ -442,7 +485,7 @@ body.book-lock{overflow:hidden}
 <script>document.documentElement.classList.add('js')</script>
 
 <!-- ======================= STICKY HEADER ======================= -->
-<header class="topbar scrolled" id="topbar">
+<header class="topbar" id="topbar">
   <div class="wrap bar">
     <a href="#top" class="brand" aria-label="Zach Belman — back to top">Zach Belman</a>
     <div class="verified" aria-label="Verified: the Nation's Best, 2026 RealTrends Verified">
@@ -467,6 +510,7 @@ body.book-lock{overflow:hidden}
     <div>
       <span class="eyebrow">REALTOR® · Keller Williams Elevate</span>
       <h1 id="hero-title">Bay Area real estate, guided by someone who's <em>in it with you.</em></h1>
+      <script>(function(){var h=document.getElementById('hero-title'),i=0;(function walk(n){Array.prototype.slice.call(n.childNodes).forEach(function(c){if(c.nodeType===3){var f=document.createDocumentFragment();c.textContent.split(/(\s+)/).forEach(function(t){if(!t)return;if(/^\s+$/.test(t)){f.appendChild(document.createTextNode(t));return;}var o=document.createElement('span'),w=document.createElement('span');o.className='w';w.textContent=t;w.style.setProperty('--i',i++);o.appendChild(w);f.appendChild(o);});n.replaceChild(f,c);}else if(c.nodeType===1){walk(c);}});})(h);document.documentElement.style.setProperty('--hero-words',i);})();</script>
       <p class="hero-sub">Buying your first home, selling the one you've outgrown, or relocating anywhere from San Francisco to San Jose — get honest advice, sharp negotiation and a direct line to me from first call to closing.</p>
       <div class="cta-row">
         <a class="btn btn-ghost-light btn-lg" href="#contact" data-cta="">Get in Touch</a>
@@ -492,11 +536,18 @@ body.book-lock{overflow:hidden}
   </div>
 </section>
 
+
+<!-- Scrolling strip of the cities Zach works in -->
+<div class="marquee" aria-label="Cities served">
+  <span class="marquee-label">Serving the Bay Area</span>
+  <div class="marquee-viewport"><div class="marquee-track"><ul class="marquee-group"><li>San Jose</li><li>Santa Clara</li><li>Sunnyvale</li><li>Mountain View</li><li>Palo Alto</li><li>Cupertino</li><li>Milpitas</li><li>Fremont</li><li>Campbell</li><li>Los Gatos</li><li>San Francisco</li><li>Hercules</li></ul><ul class="marquee-group" aria-hidden="true"><li>San Jose</li><li>Santa Clara</li><li>Sunnyvale</li><li>Mountain View</li><li>Palo Alto</li><li>Cupertino</li><li>Milpitas</li><li>Fremont</li><li>Campbell</li><li>Los Gatos</li><li>San Francisco</li><li>Hercules</li></ul><ul class="marquee-group" aria-hidden="true"><li>San Jose</li><li>Santa Clara</li><li>Sunnyvale</li><li>Mountain View</li><li>Palo Alto</li><li>Cupertino</li><li>Milpitas</li><li>Fremont</li><li>Campbell</li><li>Los Gatos</li><li>San Francisco</li><li>Hercules</li></ul><ul class="marquee-group" aria-hidden="true"><li>San Jose</li><li>Santa Clara</li><li>Sunnyvale</li><li>Mountain View</li><li>Palo Alto</li><li>Cupertino</li><li>Milpitas</li><li>Fremont</li><li>Campbell</li><li>Los Gatos</li><li>San Francisco</li><li>Hercules</li></ul></div></div>
+</div>
+
 <!-- ======================= 2. ABOUT ME ======================= -->
 <section class="section" id="about" aria-labelledby="about-title">
   <div class="wrap">
     <div class="about-grid">
-      <div class="badge-card reveal in">
+      <div class="badge-card reveal">
         <svg class="seal" viewBox="0 0 240 240" role="img" aria-labelledby="sealTitle">
           <title id="sealTitle">2026 RealTrends Verified — Verified: the Nation's Best</title>
           <defs>
@@ -522,12 +573,12 @@ body.book-lock{overflow:hidden}
         <p>2026 RealTrends Verified</p>
         <p><a href="https://www.realtrends.com/ranking/best-real-estate-agents-santa-clara-california/individuals-by-volume/" target="_blank" rel="noopener" style="color:inherit">Top 20 agent in Santa Clara by sales volume</a></p>
         <div class="stats">
-          <div><b>5.0★</b><span>Zillow rating</span></div>
-          <div><b>77K</b><span>YouTube views</span></div>
-          <div><b>3,900+</b><span>Instagram followers</span></div>
+          <div><b data-count="5" data-decimals="1" data-suffix="★">5.0★</b><span>Zillow rating</span></div>
+          <div><b data-count="77" data-suffix="K">77K</b><span>YouTube views</span></div>
+          <div><b data-count="3900" data-suffix="+">3,900+</b><span>Instagram followers</span></div>
         </div>
       </div>
-      <div class="bio reveal in">
+      <div class="bio reveal">
         <span class="eyebrow">About Me</span>
         <h2 class="h2" id="about-title">Hi, I'm Zach.</h2>
         <p>I'm a REALTOR® with Keller Williams Elevate, helping buyers, sellers and investors across the entire Bay Area — from San Francisco and the Peninsula to Silicon Valley and the East Bay.</p>
@@ -540,11 +591,11 @@ body.book-lock{overflow:hidden}
       </div>
     </div>
 
-    <div class="services-head reveal in">
+    <div class="services-head reveal">
       <span class="eyebrow">How I Can Help</span>
       <h2 class="h2">Services built around your move.</h2>
     </div>
-    <div class="services reveal in">
+    <div class="services stagger">
       <button class="service" type="button" data-cta="" data-interest="Buying &amp; selling">
         <span class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9v12h14V9"></path><path d="M9.5 21v-6h5v6"></path></svg></span>
         <h3>Selling &amp; Buying</h3>
@@ -588,7 +639,7 @@ body.book-lock{overflow:hidden}
 <!-- ======================= 3. PORTFOLIO ======================= -->
 <section class="section alt" id="portfolio" aria-labelledby="portfolio-title">
   <div class="wrap">
-    <div class="section-head reveal in">
+    <div class="section-head reveal">
       <div>
         <span class="eyebrow">Portfolio</span>
         <h2 id="portfolio-title">Recently sold.</h2>
@@ -599,7 +650,7 @@ body.book-lock{overflow:hidden}
         <button class="icon-btn" type="button" id="nextBtn" aria-label="Next homes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
       </div>
     </div>
-    <div class="track reveal in" id="track" tabindex="0" aria-label="Sold homes carousel" role="region">
+    <div class="track stagger" id="track" tabindex="0" aria-label="Sold homes carousel" role="region">
       <article class="card">
         <div class="card-media"><img decoding="async" width="900" height="600" src="img/sold-1457-mercado-way.jpg" alt="1457 Mercado Way, San Jose" loading="lazy"><span class="chip-sold">SOLD</span></div>
         <div class="card-body"><div class="price">$1,360,000</div><div class="addr">1457 Mercado Way</div><div class="city">San Jose, CA</div>
@@ -632,7 +683,7 @@ body.book-lock{overflow:hidden}
       </article>
     </div>
     <div class="dots" id="dots" aria-hidden="true"><button type="button" tabindex="-1" class="on"></button><button type="button" tabindex="-1" class=""></button><button type="button" tabindex="-1" class=""></button><button type="button" tabindex="-1" class=""></button></div>
-    <div class="below-cta reveal in">
+    <div class="below-cta reveal">
       <span>Wondering what your home could sell for?</span>
       <a class="btn btn-navy" href="#contact" data-cta="" data-interest="Home valuation / market analysis">Get a free pricing analysis</a>
     </div>
@@ -642,7 +693,7 @@ body.book-lock{overflow:hidden}
 <!-- ======================= 4. MARKET LOOKUP ======================= -->
 <section class="section" id="market" aria-labelledby="market-title">
   <div class="wrap">
-    <div class="market reveal in">
+    <div class="market reveal">
       <span class="eyebrow">Market Lookup</span>
       <h2 id="market-title">Bay Area, By The Numbers</h2>
       <p class="lede">Pick a city or enter a ZIP code to see how fast homes are moving and what buyers are paying right now.</p>
@@ -677,7 +728,7 @@ body.book-lock{overflow:hidden}
 <!-- ======================= 5. REVIEWS ======================= -->
 <section class="section alt" id="reviews" aria-labelledby="reviews-title">
   <div class="wrap">
-    <div class="section-head reveal in">
+    <div class="section-head reveal">
       <div>
         <span class="eyebrow">Reviews</span>
         <h2 id="reviews-title">In my clients' words.</h2>
@@ -685,8 +736,8 @@ body.book-lock{overflow:hidden}
       </div>
       <a class="link-arrow" href="https://www.zillow.com/profile/zachbelman" target="_blank" rel="noopener">See all reviews on Zillow <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
     </div>
-    <div class="reviews">
-      <figure class="review reveal in" style="margin:0">
+    <div class="reviews stagger">
+      <figure class="review" style="margin:0">
         <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
         <blockquote>We can’t say enough good things about working with Zach. We’d been on and off the home search for some time, and when we finally connected with him, everything just aligned. He made the entire process feel seamless from start to finish. Zach was easy to work with, fun, knowledgeable, and transparent every step of the way. His kindness, patience, and professionalism turned what could have been a stressful process into something genuinely exciting. We’re so grateful for his guidance in helping make a long-held dream a reality — we’d recommend him in a heartbeat!</blockquote>
         <figcaption class="who">
@@ -695,7 +746,7 @@ body.book-lock{overflow:hidden}
           <a class="src" href="https://www.zillow.com/profile/zachbelman" target="_blank" rel="noopener">Zillow ↗</a>
         </figcaption>
       </figure>
-      <figure class="review reveal in" style="margin:0">
+      <figure class="review" style="margin:0">
         <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
         <blockquote>Zach was eager and provided good planning of our home sale with good communication up and down the chain of cleaning, repair and staging vendors, title company and realtors. It was very reassuring to work with such a professional.</blockquote>
         <figcaption class="who">
@@ -711,7 +762,7 @@ body.book-lock{overflow:hidden}
 <!-- ======================= 6. FAQ ======================= -->
 <section class="section" id="faq" aria-labelledby="faq-title">
   <div class="wrap faq-grid">
-    <div class="faq-aside reveal in">
+    <div class="faq-aside reveal">
       <span class="eyebrow">FAQ</span>
       <h2 class="h2" id="faq-title">Frequently asked questions.</h2>
       <div class="box">
@@ -720,7 +771,7 @@ body.book-lock{overflow:hidden}
         <a class="btn btn-navy" href="#contact" data-cta="" data-interest="Just have a question">Get in Touch</a>
       </div>
     </div>
-    <div class="acc reveal in" id="acc">
+    <div class="acc reveal" id="acc">
       <div class="acc-item open">
         <button class="acc-q" type="button" aria-expanded="true" id="q1" aria-controls="a1">How do we get started?<span class="pm" aria-hidden="true"></span></button>
         <div class="acc-a" id="a1" role="region" aria-labelledby="q1"><div><p>Send me a note through the contact form or book a call. We'll spend 15–20 minutes on your goals, timeline and budget, and I'll follow up with a clear game plan — no pressure and no obligation.</p></div></div>
@@ -756,7 +807,7 @@ body.book-lock{overflow:hidden}
 <!-- ======================= 7. GET IN TOUCH ======================= -->
 <section class="section contact" id="contact" aria-labelledby="contact-title">
   <div class="wrap contact-grid">
-    <div class="reveal in">
+    <div class="reveal">
       <span class="eyebrow">Contact</span>
       <h2 id="contact-title">Get in touch.</h2>
       <p class="lede">Buying, selling, or just curious what your home is worth? Tell me a little about your plans and I'll be in touch the same day.</p>
@@ -768,7 +819,7 @@ body.book-lock{overflow:hidden}
       <p class="promise"><span class="pulse" aria-hidden="true"></span>Same-day response.</p>
     </div>
 
-    <div class="form-card reveal in flash" id="formCard">
+    <div class="form-card reveal" id="formCard">
       <div class="fc-head">
         <h3>Send Zach a message</h3>
         <p class="sub">All fields marked optional can be skipped.</p>
@@ -829,43 +880,43 @@ body.book-lock{overflow:hidden}
 <!-- ======================= 8. FOLLOW ALONG ======================= -->
 <section class="section" id="follow" aria-labelledby="follow-title">
   <div class="wrap">
-    <div class="section-head reveal in" style="margin-bottom:56px">
+    <div class="section-head reveal" style="margin-bottom:56px">
       <div>
         <span class="eyebrow">Follow Along</span>
         <h2 id="follow-title">Homes, neighborhoods &amp; market updates.</h2>
       </div>
     </div>
 
-    <div class="follow-sub reveal in">
+    <div class="follow-sub reveal">
       <div>
         <h3><svg width="30" height="22" viewBox="0 0 28 20" aria-hidden="true"><rect width="28" height="20" rx="5" fill="#0E2240"></rect><path d="M11 5.5v9l8-4.5z" fill="#C6A15B"></path></svg>Living in Silicon Valley</h3>
         <p class="meta">@Moving2SanJose · 76,739 views and counting</p>
       </div>
       <a class="btn btn-outline" href="https://www.youtube.com/@Moving2SanJose" target="_blank" rel="noopener">Visit YouTube channel</a>
     </div>
-    <div class="yt-grid">
-      <a class="yt reveal in" href="https://www.youtube.com/watch?v=w0K4aGaFUZU" target="_blank" rel="noopener">
+    <div class="yt-grid stagger">
+      <a class="yt" href="https://www.youtube.com/watch?v=w0K4aGaFUZU" target="_blank" rel="noopener">
         <div class="yt-thumb"><img decoding="async" width="640" height="360" src="img/youtube-1.jpg" alt="" loading="lazy"><span class="play"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"></path></svg></span></div>
         <h4>San Jose House Tour in Top Neighborhood | Almaden Valley Single Family Home Tour</h4>
       </a>
-      <a class="yt reveal in" href="https://www.youtube.com/watch?v=kcuzjeE-4mU&amp;t=30s" target="_blank" rel="noopener">
+      <a class="yt" href="https://www.youtube.com/watch?v=kcuzjeE-4mU&amp;t=30s" target="_blank" rel="noopener">
         <div class="yt-thumb"><img decoding="async" width="640" height="360" src="img/youtube-2.jpg" alt="" loading="lazy"><span class="play"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"></path></svg></span></div>
         <h4>San Francisco Commuter's Dream House | Hercules, CA Single Family Home Tour</h4>
       </a>
-      <a class="yt reveal in" href="https://www.youtube.com/watch?v=hrnYvLHa6tc" target="_blank" rel="noopener">
+      <a class="yt" href="https://www.youtube.com/watch?v=hrnYvLHa6tc" target="_blank" rel="noopener">
         <div class="yt-thumb"><img decoding="async" width="640" height="360" src="img/youtube-3.jpg" alt="" loading="lazy"><span class="play"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"></path></svg></span></div>
         <h4>1302 Fairway Entrance Dr, San Jose, CA 95131</h4>
       </a>
     </div>
 
     <div class="ig-block">
-      <div class="follow-sub reveal in" style="justify-content:center;text-align:center">
+      <div class="follow-sub reveal" style="justify-content:center;text-align:center">
         <div>
           <h3 style="justify-content:center">Follow on Instagram</h3>
           <p class="meta"><a href="https://www.instagram.com/zachbelman/" target="_blank" rel="noopener" style="text-decoration:none">@zachbelman</a> · 3,900+ followers</p>
         </div>
       </div>
-      <div class="ig-grid reveal in">
+      <div class="ig-grid stagger">
         <a class="ig" href="https://www.instagram.com/reel/DWCiNvzkhD5/" target="_blank" rel="noopener" aria-label="Instagram reel 1"><img decoding="async" width="420" height="746" src="img/instagram-1.jpg" alt="" loading="lazy"><svg class="reel" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"></path></svg></a>
         <a class="ig" href="https://www.instagram.com/reel/DOJ2gdYEkRV/" target="_blank" rel="noopener" aria-label="Instagram reel 2"><img decoding="async" width="420" height="745" src="img/instagram-2.jpg" alt="" loading="lazy"><svg class="reel" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"></path></svg></a>
         <a class="ig" href="https://www.instagram.com/reel/DW10LNbEVn5/" target="_blank" rel="noopener" aria-label="Instagram reel 3"><img decoding="async" width="420" height="745" src="img/instagram-3.jpg" alt="" loading="lazy"><svg class="reel" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"></path></svg></a>
@@ -1113,10 +1164,14 @@ body.book-lock{overflow:hidden}
     els.source.textContent = 'Source: Redfin, data through ' + monthName(DATA.updated) + '. Updated automatically every day.';
   }
   function fmtPrice(n){ return n >= 1e6 ? '$' + (n/1e6).toFixed(2) + 'M' : '$' + Math.round(n/1e3) + 'K'; }
-  function animate(el, to, fmt){
+  // Market numbers count up from zero the first time the section scrolls into view
+  var marketSeen = reduce || !('IntersectionObserver' in window);
+  function animate(el, to, fmt, dur){
+    el._fmt = fmt;
     if (to === null || to === undefined){ el._tok = {}; el.removeAttribute('data-v'); el.textContent = '—'; return; }
+    if (!marketSeen){ el._tok = {}; el.setAttribute('data-v', to); el.textContent = fmt(0); return; }
     if (reduce || !el.hasAttribute('data-v')){ el.setAttribute('data-v', to); el.textContent = fmt(to); return; }
-    var from = parseFloat(el.getAttribute('data-v')), t0 = null, dur = 700;
+    var from = parseFloat(el.getAttribute('data-v')), t0 = null; dur = dur || 700;
     el.setAttribute('data-v', to);
     var tok = el._tok = {};
     function f(t){ if (el._tok !== tok) return; if(!t0) t0=t; var p=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-p,3); el.textContent = fmt(from + (to-from)*e); if(p<1) requestAnimationFrame(f); }
@@ -1167,6 +1222,17 @@ body.book-lock{overflow:hidden}
   cityInput.addEventListener('change', lookup);
   buildPickers();
   showPlace('San Jose');
+  if (!marketSeen){
+    var mio = new IntersectionObserver(function(entries){
+      if (!entries.some(function(en){ return en.isIntersecting; })) return;
+      mio.disconnect(); marketSeen = true;
+      [els.price, els.dom, els.stl, els.above].forEach(function(el){
+        if (!el.hasAttribute('data-v')) return;
+        var to = parseFloat(el.getAttribute('data-v')); el.setAttribute('data-v', 0); animate(el, to, el._fmt, 1600);
+      });
+    }, {threshold:0.35});
+    mio.observe(els.stats);
+  }
   if (window.fetch && location.protocol !== 'file:'){
     fetch('market.json', {cache:'no-cache'}).then(function(r){ if (!r.ok) throw r; return r.json(); }).then(function(j){
       if (!j || !j.cities || !Object.keys(j.cities).length) return;
@@ -1230,14 +1296,40 @@ body.book-lock{overflow:hidden}
       .then(function(){ submitBtn.removeAttribute('aria-busy'); $('.lbl', submitBtn).textContent = 'Send message'; });
   });
 
-  /* ---------- Reveal on scroll ---------- */
-  var revealEls = $$('.reveal');
-  if ('IntersectionObserver' in window && !reduce){
+  /* ---------- Reveal on scroll, count-ups ---------- */
+  var motion = 'IntersectionObserver' in window && !reduce;
+  var revealEls = $$('.reveal'), groups = $$('.stagger'), counters = $$('[data-count]');
+  function fmtCount(el, v){
+    var dec = +(el.getAttribute('data-decimals') || 0);
+    return v.toLocaleString('en-US', {minimumFractionDigits:dec, maximumFractionDigits:dec}) + (el.getAttribute('data-suffix') || '');
+  }
+  function countUp(el){
+    var to = parseFloat(el.getAttribute('data-count')), t0 = null, dur = 1800;
+    function f(t){ if (!t0) t0 = t; var p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 4); el.textContent = fmtCount(el, p < 1 ? to * e : to); if (p < 1) requestAnimationFrame(f); }
+    requestAnimationFrame(f);
+  }
+  // After a group has appeared, drop the effect so hover animations respond instantly again
+  function showGroup(g){
+    g.classList.add('in');
+    setTimeout(function(){ g.classList.remove('stagger', 'in'); }, 1500 + g.children.length * 90);
+  }
+  if (motion){
+    groups.forEach(function(g){ Array.prototype.forEach.call(g.children, function(c, i){ c.style.setProperty('--i', Math.min(i, 8)); }); });
+    counters.forEach(function(el){ el.textContent = fmtCount(el, 0); });
     var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+      entries.forEach(function(en){
+        if (!en.isIntersecting) return;
+        var el = en.target; io.unobserve(el);
+        if (el.hasAttribute('data-count')) countUp(el);
+        else if (el.classList.contains('stagger')) showGroup(el);
+        else el.classList.add('in');
+      });
     }, {rootMargin:'0px 0px -8% 0px', threshold:0.08});
-    revealEls.forEach(function(el){ io.observe(el); });
-  } else { revealEls.forEach(function(el){ el.classList.add('in'); }); }
+    revealEls.concat(groups, counters).forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('in'); });
+    groups.forEach(function(g){ g.classList.remove('stagger'); });
+  }
 
   $('#yr').textContent = new Date().getFullYear();
 })();
