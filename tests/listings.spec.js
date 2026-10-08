@@ -42,7 +42,7 @@ for (const slug of slugs) {
       const tourBtn = page.locator('#tourBtn:visible, #mctaBtn:visible').first();
       await tourBtn.click();
       await expect(page.locator('#tourView')).toBeVisible();
-      await page.getByRole('button', { name: 'Next week' }).click();
+      await page.getByRole('button', { name: 'Tomorrow' }).click();
       await page.getByRole('button', { name: 'No', exact: true }).click();
       await page.fill('#fName', 'Test Buyer');
       await page.fill('#fEmail', 'test.buyer@example.com');
@@ -54,7 +54,7 @@ for (const slug of slugs) {
       const post = site.formPosts[0];
       expect(post.url).toMatch(FORMSPREE);
       expect(site.fieldValue(post, 'email')).toBe('test.buyer@example.com');
-      expect(site.fieldValue(post, 'when')).toBe('Next week');
+      expect(site.fieldValue(post, 'when')).toBe('Tomorrow');
       expect(site.fieldValue(post, 'has_agent')).toBe('No');
       expect(site.fieldValue(post, 'listing')).toMatch(/MLS# /);
       expect(await site.analyticsEvents()).toContain('generate_lead');
