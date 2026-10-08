@@ -394,8 +394,6 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
 /* ---------- Motion ---------- */
 @keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
 @keyframes wordUp{from{transform:translateY(105%)}to{transform:none}}
-@keyframes unveil{from{clip-path:inset(100% 0 0 0 round 18px)}to{clip-path:inset(0 0 0 0 round 18px)}}
-@keyframes settle{from{transform:scale(1.14)}to{transform:none}}
 @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-25%)}}
 .hero h1 .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.12em;margin-bottom:-.12em}
 .hero h1 .w>span{display:inline-block}
@@ -404,8 +402,6 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
 .js .hero-sub{animation:rise .9s ease both;animation-delay:calc(.35s + var(--hero-words,10) * 55ms)}
 .js .hero .cta-row{animation:rise .9s ease both;animation-delay:calc(.5s + var(--hero-words,10) * 55ms)}
 .js .hero-trust{animation:rise .9s ease both;animation-delay:calc(.65s + var(--hero-words,10) * 55ms)}
-.js .portrait-frame{animation:unveil 1.3s cubic-bezier(.7,0,.2,1) both .25s}
-.js .portrait-frame img{animation:settle 2.6s cubic-bezier(.2,.7,.2,1) both .25s}
 
 .marquee{display:flex;align-items:center;gap:28px;background:var(--navy-2);color:#fff;border-top:1px solid rgba(255,255,255,.08);padding:0 0 0 24px;overflow:hidden}
 .marquee-label{flex:none;font-size:12px;font-weight:650;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);padding:20px 0}
@@ -1164,18 +1160,9 @@ body.book-lock{overflow:hidden}
     els.source.textContent = 'Source: Redfin, data through ' + monthName(DATA.updated) + '. Updated automatically every day.';
   }
   function fmtPrice(n){ return n >= 1e6 ? '$' + (n/1e6).toFixed(2) + 'M' : '$' + Math.round(n/1e3) + 'K'; }
-  // Market numbers count up from zero the first time the section scrolls into view
-  var marketSeen = reduce || !('IntersectionObserver' in window);
-  function animate(el, to, fmt, dur){
-    el._fmt = fmt;
-    if (to === null || to === undefined){ el._tok = {}; el.removeAttribute('data-v'); el.textContent = '—'; return; }
-    if (!marketSeen){ el._tok = {}; el.setAttribute('data-v', to); el.textContent = fmt(0); return; }
-    if (reduce || !el.hasAttribute('data-v')){ el.setAttribute('data-v', to); el.textContent = fmt(to); return; }
-    var from = parseFloat(el.getAttribute('data-v')), t0 = null; dur = dur || 700;
-    el.setAttribute('data-v', to);
-    var tok = el._tok = {};
-    function f(t){ if (el._tok !== tok) return; if(!t0) t0=t; var p=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-p,3); el.textContent = fmt(from + (to-from)*e); if(p<1) requestAnimationFrame(f); }
-    requestAnimationFrame(f);
+  function animate(el, to, fmt){
+    if (to === null || to === undefined){ el.removeAttribute('data-v'); el.textContent = '—'; return; }
+    el.setAttribute('data-v', to); el.textContent = fmt(to);
   }
   function setCtaMessage(el, place){
     el.setAttribute('data-message', 'I\'d like a custom market report for ' + place + '.');
@@ -1222,17 +1209,6 @@ body.book-lock{overflow:hidden}
   cityInput.addEventListener('change', lookup);
   buildPickers();
   showPlace('San Jose');
-  if (!marketSeen){
-    var mio = new IntersectionObserver(function(entries){
-      if (!entries.some(function(en){ return en.isIntersecting; })) return;
-      mio.disconnect(); marketSeen = true;
-      [els.price, els.dom, els.stl, els.above].forEach(function(el){
-        if (!el.hasAttribute('data-v')) return;
-        var to = parseFloat(el.getAttribute('data-v')); el.setAttribute('data-v', 0); animate(el, to, el._fmt, 1600);
-      });
-    }, {threshold:0.35});
-    mio.observe(els.stats);
-  }
   if (window.fetch && location.protocol !== 'file:'){
     fetch('market.json', {cache:'no-cache'}).then(function(r){ if (!r.ok) throw r; return r.json(); }).then(function(j){
       if (!j || !j.cities || !Object.keys(j.cities).length) return;
