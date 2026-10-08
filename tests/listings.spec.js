@@ -80,6 +80,20 @@ for (const slug of slugs) {
       await expect(page.locator('#bookModal')).not.toHaveClass(/open/);
     });
 
+    test('monthly payment estimate works and leads to the tour form', async ({ page }) => {
+      const total = page.locator('#payTotal');
+      await expect(total).toHaveText(/^\$[\d,]+\/mo$/);
+      const before = Number((await total.innerText()).replace(/[^\d]/g, ''));
+      await page.locator('#payBox summary').click();
+      await page.fill('#pDown', '10');
+      await expect(page.locator('#payRows')).toContainText('Mortgage insurance');
+      const after = Number((await total.innerText()).replace(/[^\d]/g, ''));
+      expect(after, 'less down payment = higher monthly payment').toBeGreaterThan(before);
+      await page.click('#financeBtn');
+      await expect(page.locator('#tourView')).toBeVisible();
+      await expect(page.locator('#showForm textarea[name="message"]')).toHaveValue(/financing/);
+    });
+
     test('page fits the screen width (no sideways scrolling)', async ({ page }) => {
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       expect(overflow).toBeLessThanOrEqual(1);

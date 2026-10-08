@@ -8,6 +8,14 @@
 <meta property="og:title" content="1457 Husted Ave, San Jose · 4 bd · 3 ba · $2,588,000">
 <meta property="og:description" content="Willow Glen home with solar and backup batteries. Request a private showing.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://zachbelman.com/listings/1457-husted-ave/">
+<meta property="og:site_name" content="Zach Belman Real Estate">
+<meta property="og:image" content="https://zachbelman.com/listings/1457-husted-ave/1.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="798">
+<meta property="og:image:alt" content="Front of 1457 Husted Ave, San Jose">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://zachbelman.com/listings/1457-husted-ave/">
 <meta name="theme-color" content="#0E2240">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230E2240'/%3E%3Ctext x='32' y='43' font-family='Georgia,serif' font-size='30' text-anchor='middle' fill='%23C6A15B'%3EZB%3C/text%3E%3C/svg%3E">
 <script>
@@ -22,6 +30,14 @@ window.LISTING = {
   photos: ['1.jpg','2.jpg','3.jpg','4.jpg'],
   floorplan: 'floorplan.jpg',
   openHouses: [],   // e.g. {label: 'Sat, Oct 10 · 2–4 PM', ends: '2026-10-10T16:00:00-07:00'}
+  // Monthly payment estimate (visitors can change down payment, rate and term)
+  payment: {
+    rate: 7.28, rateNote: 'Freddie Mac 30-year average, Oct 1, 2026',
+    downPct: 20, termYears: 30,
+    taxRatePct: 1.2,          // Santa Clara County property tax, approx. % of price per year
+    insurancePerYear: 3000,   // homeowners insurance estimate
+    hoaPerMonth: 0
+  },
   // Short write-up shown under the price (first few lines show; "Read more" opens the rest)
   story: [
     'A bright two-story home on a quiet Willow Glen street, built in 1999 and updated throughout. Vaulted ceilings and big windows fill the main living spaces with light, and two fireplaces anchor the formal dining room and the family room.',
@@ -127,6 +143,21 @@ h1{font-family:var(--serif);font-weight:400;color:var(--navy);font-size:32px;lin
 .facts b{font-weight:600}
 .oh{margin-top:12px;font-size:14px;background:var(--cream);border-radius:10px;padding:9px 12px}
 .oh b{color:var(--navy)}
+.pay{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.pay summary{padding:11px 14px;font-weight:600;color:var(--navy)}
+.pay summary .amt{margin-left:auto;margin-right:12px;font-family:var(--serif);font-weight:400;font-size:19px}
+.pay summary small{font-weight:400;color:var(--muted);font-size:13px;margin-left:4px}
+.pay .inner{padding:0 14px 14px}
+.pay .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:end}
+.pay label{display:block;font-size:12.5px;font-weight:600;color:var(--navy)}
+.pay input,.pay select{width:100%;font:inherit;font-size:14.5px;color:var(--ink);background:var(--cream);border:1.5px solid transparent;border-radius:9px;padding:8px 10px;margin-top:3px}
+.pay input:focus,.pay select:focus{outline:none;border-color:var(--gold);background:#fff}
+.pay .hint{font-size:11.5px;color:var(--muted);font-weight:400}
+.breakdown{width:100%;border-collapse:collapse;font-size:14px;margin-top:4px}
+.breakdown td{padding:5px 0;border-bottom:1px solid var(--line)}
+.breakdown td:last-child{text-align:right}
+.breakdown tr.total td{font-weight:700;color:var(--navy);border-bottom:0;padding-top:8px}
+.pay .disc{font-size:11.5px;color:var(--muted);margin:8px 0 10px;line-height:1.5}
 .story{margin-top:16px;font-size:15px;color:var(--ink)}
 .story p{margin:0 0 10px}
 .story.clamped{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
@@ -233,6 +264,22 @@ body.lock{overflow:hidden}
         <div class="price" id="price"></div>
         <p class="facts" id="facts"></p>
         <div class="oh" id="openHouse" hidden></div>
+        <details class="pay" id="payBox">
+          <summary>Est. payment <span class="amt" id="payTotal"></span></summary>
+          <div class="inner">
+            <div class="row">
+              <label>Down payment % <span class="hint" id="downAmt"></span><input type="number" id="pDown" min="0" max="100" step="1" inputmode="decimal"></label>
+              <label>Interest rate (%)<input type="number" id="pRate" min="0" max="20" step="0.01" inputmode="decimal"></label>
+            </div>
+            <div class="row">
+              <label>Loan term<select id="pTerm"><option value="30">30 years</option><option value="15">15 years</option></select></label>
+              <label>Price<input type="text" id="pPrice" readonly tabindex="-1"></label>
+            </div>
+            <table class="breakdown"><tbody id="payRows"></tbody></table>
+            <p class="disc" id="payDisc"></p>
+            <button class="btn btn-outline btn-block" type="button" id="financeBtn">Talk to Zach about financing</button>
+          </div>
+        </details>
         <div class="story clamped" id="story"></div>
         <button class="linkbtn" type="button" id="readMore">Read more</button>
         <div class="cta">
@@ -329,6 +376,39 @@ body.lock{overflow:hidden}
   $('#fSubject').value = 'Tour request: ' + L.address;
   $('#fListing').value = L.address + ', ' + L.city + ' (MLS# ' + L.mls + ')';
   $('#yr').textContent = new Date().getFullYear();
+
+  // Monthly payment estimate
+  (function(){
+    var M = L.payment; if (!M){ $('#payBox').hidden = true; return; }
+    var down = $('#pDown'), rate = $('#pRate'), term = $('#pTerm'), used = false;
+    down.value = M.downPct; rate.value = M.rate; term.value = String(M.termYears); $('#pPrice').value = fmt(L.price);
+    var m = function(n){ return '$' + Math.round(n).toLocaleString('en-US'); };
+    function calc(){
+      var dp = Math.min(100, Math.max(0, parseFloat(down.value) || 0)), r = (parseFloat(rate.value) || 0) / 100 / 12, n = (parseInt(term.value, 10) || 30) * 12;
+      var loan = L.price * (1 - dp / 100);
+      var pi = loan <= 0 ? 0 : (r === 0 ? loan / n : loan * r / (1 - Math.pow(1 + r, -n)));
+      var tax = L.price * M.taxRatePct / 100 / 12, ins = M.insurancePerYear / 12, hoa = M.hoaPerMonth || 0;
+      var pmi = dp < 20 ? loan * 0.005 / 12 : 0;
+      var rows = [['Principal & interest', pi], ['Property tax', tax], ['Home insurance', ins]];
+      if (hoa) rows.push(['HOA', hoa]);
+      if (pmi) rows.push(['Mortgage insurance (est.)', pmi]);
+      var total = rows.reduce(function(a, x){ return a + x[1]; }, 0);
+      $('#payRows').innerHTML = rows.map(function(x){ return '<tr><td>' + x[0] + '</td><td>' + m(x[1]) + '</td></tr>'; }).join('') + '<tr class="total"><td>Total per month</td><td>' + m(total) + '</td></tr>';
+      $('#payTotal').innerHTML = m(total) + '<small>/mo</small>';
+      $('#downAmt').textContent = '(' + m(L.price * dp / 100) + ')';
+    }
+    function changed(){ calc(); if (!used){ used = true; zbTrack('payment_calc_use', {name:'PaymentCalcUse', custom:true}, {listing: L.mls}); } }
+    [down, rate, term].forEach(function(el){ el.addEventListener('input', changed); el.addEventListener('change', changed); });
+    $('#payDisc').textContent = 'Estimate only, not a loan offer. Rate shown is the ' + M.rateNote + '; your rate depends on your credit, loan type and lender. Property tax approx. ' + M.taxRatePct + '% of price; insurance is an estimate' + (M.hoaPerMonth ? '' : '; no HOA') + '.';
+    $('#payBox').addEventListener('toggle', function(){ if (this.open) zbTrack('payment_calc_open', null, {listing: L.mls}); });
+    $('#financeBtn').addEventListener('click', function(){
+      zbTrack('financing_help_click', {name:'FinancingHelpClick', custom:true}, {listing: L.mls});
+      openTour();
+      var msg = document.querySelector('#showForm textarea[name="message"]');
+      if (msg && !msg.value) msg.value = "I'd like help with financing options for this home.";
+    });
+    calc();
+  })();
 
   // Read more / less
   var story = $('#story'), rm = $('#readMore');

@@ -42,6 +42,28 @@ test.describe('Site-wide checks', () => {
     });
   }
 
+  for (const p of ['index.html', ...listingSlugs().map((s) => `listings/${s}/index.html`)]) {
+    test(`${p}: has a link preview image for social media and texts`, () => {
+      const html = read(p);
+      const img = html.match(/<meta property="og:image" content="([^"]+)"/);
+      expect(img, 'og:image tag').not.toBeNull();
+      expect(img[1]).toMatch(/^https:\/\/zachbelman\.com\//);
+      const local = path.join(ROOT, img[1].replace('https://zachbelman.com/', ''));
+      expect(fs.existsSync(local), `preview image ${img[1]} exists in the repository`).toBe(true);
+      expect(html).toMatch(/<meta property="og:title" content="[^"]+"/);
+      expect(html).toContain('<meta name="twitter:card" content="summary_large_image">');
+    });
+  }
+
+  test('homepage stays fast: small page file, photos as separate files that load as you scroll', () => {
+    const html = read('index.html');
+    expect(Buffer.byteLength(html), 'index.html size in bytes').toBeLessThan(300 * 1024);
+    expect(html, 'no large photos embedded inside the page').not.toMatch(/src="data:image\/(jpeg|png);base64,[A-Za-z0-9+/=]{20000,}/);
+    const imgs = [...html.matchAll(/<img\b[^>]*>/g)].map((m) => m[0]);
+    const eager = imgs.filter((t) => !/loading="lazy"/.test(t));
+    expect(eager.length, 'only the top-of-page photo should load immediately').toBeLessThanOrEqual(2);
+  });
+
   test('homepage footer has the disclaimer and REALTOR/MLS + Equal Housing logos', async ({ page }) => {
     await page.goto('/');
     const legal = page.locator('.legal');
