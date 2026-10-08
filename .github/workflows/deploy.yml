@@ -1,0 +1,70 @@
+name: Test and deploy website
+
+# Runs the automated tests on every change. The site is only published if every test passes.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:          # "Run workflow" button on the Actions tab
+  workflow_run:               # also redeploy after the market-numbers job saves new data
+    workflows: ["Update market numbers"]
+    types: [completed]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  test:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install test tools
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Run website tests
+        run: npx playwright test
+      - name: Save test report (only if something failed)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: test-results/
+          retention-days: 14
+
+  deploy:
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect the website files (leave out tests and tools)
+        run: |
+          mkdir _site
+          rsync -a ./ _site/ \
+            --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'node_modules' \
+            --exclude 'tests' --exclude 'test-results' --exclude 'playwright-report' \
+            --exclude 'scripts' --exclude 'package.json' --exclude 'package-lock.json' \
+            --exclude 'playwright.config.js' --exclude '.gitignore' --exclude 'README.md' --exclude 'LICENSE'
+          ls -la _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
