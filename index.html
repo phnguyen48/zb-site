@@ -400,6 +400,8 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
 .book-panel iframe{flex:1;width:100%;border:0}
 body.book-lock{overflow:hidden}
 @media (max-width:760px){.book-modal{padding:0}.book-panel{height:100%;max-width:none;border-radius:0}.book-head a{display:none}}
+.book-done{display:none;align-items:center;gap:10px;padding:12px 24px;background:#EAF6EE;color:#1F6B3A;font-weight:600;font-size:15px;border-bottom:1px solid #CFE8D7}
+.book-done.show{display:flex}
 </style>
 <meta name="facebook-domain-verification" content="7ttirquxz0cj893s4zuqvba7qe30m5">
 <!-- Analytics: Google Analytics 4 + Meta Pixel. Visitors whose browser sends Global Privacy Control
@@ -937,6 +939,7 @@ body.book-lock{overflow:hidden}
       <a href="https://calendly.com/zachbelman/schedule-call-to-discuss-buying-or-selling-real-estate" target="_blank" rel="noopener">Open in a new tab ↗</a>
       <button type="button" class="book-close" id="bookClose" aria-label="Close">×</button>
     </div>
+    <div class="book-done" id="bookDone" role="status" aria-live="polite">✓ You're booked! Check your email for the calendar invite.</div>
     <iframe id="bookFrame" title="Schedule a call with Zach Belman" loading="lazy"></iframe>
   </div>
 </div>
@@ -1003,6 +1006,8 @@ body.book-lock{overflow:hidden}
   // Calendly tells the page when a call is booked; analytics can listen for this later.
   window.addEventListener('message', function(e){
     if (e.origin === 'https://calendly.com' && e.data && e.data.event === 'calendly.event_scheduled') {
+      var bd = document.getElementById('bookDone'); if (bd) bd.classList.add('show');
+
       zbTrack('generate_lead', {name:'Lead'}, {method:'calendly'});
       zbTrack('book_call_scheduled', {name:'Schedule'}, {method:'calendly'});
     }
@@ -1194,7 +1199,7 @@ body.book-lock{overflow:hidden}
     status.className = 'form-status';
     if (!validate()) return;
     var data = new FormData(form);
-    if (/YOUR_FORM_ID/.test(form.action)){
+    if (!/formspree\.io\/f\/[A-Za-z0-9]+$/.test(form.action)){
       // Formspree not configured yet: fall back to the visitor's email app so no lead is lost.
       var body = 'Name: ' + data.get('name') + '\nPhone: ' + (data.get('phone')||'') + '\nEmail: ' + data.get('email') +
                  '\nInterested in: ' + data.get('interested_in') + '\n\n' + (data.get('message')||'');

@@ -1,0 +1,11 @@
+{
+  "name": "zb-site-tests",
+  "private": true,
+  "description": "Automated checks that run before every deploy of the website.",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.0"
+  }
+}

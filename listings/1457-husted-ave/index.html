@@ -204,6 +204,8 @@ body.lock{overflow:hidden}
   body.touring .mcta{display:none}
   .book-modal{padding:0}.book-panel{height:100%;max-height:none;border-radius:0}
 }
+.book-done{display:none;align-items:center;gap:10px;padding:12px 24px;background:#EAF6EE;color:#1F6B3A;font-weight:600;font-size:15px;border-bottom:1px solid #CFE8D7}
+.book-done.show{display:flex}
 </style>
 </head>
 <body>
@@ -304,6 +306,7 @@ body.lock{overflow:hidden}
 <div class="book-modal" id="bookModal" role="dialog" aria-modal="true" aria-labelledby="bookTitle">
   <div class="book-panel">
     <div class="book-head"><h3 id="bookTitle">Book a call with Zach</h3><button type="button" class="book-close" id="bookClose" aria-label="Close">×</button></div>
+    <div class="book-done" id="bookDone" role="status" aria-live="polite">✓ You're booked! Check your email for the calendar invite.</div>
     <iframe id="bookFrame" title="Schedule a call with Zach Belman"></iframe>
   </div>
 </div>
@@ -384,6 +387,8 @@ body.lock{overflow:hidden}
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape'){ closeBook(); closeLb(); } if (lb.classList.contains('open')){ if (e.key === 'ArrowLeft') show(li-1); if (e.key === 'ArrowRight') show(li+1); } });
   window.addEventListener('message', function(e){
     if (e.origin === 'https://calendly.com' && e.data && e.data.event === 'calendly.event_scheduled'){
+      var bd = document.getElementById('bookDone'); if (bd) bd.classList.add('show');
+
       zbTrack('generate_lead', {name:'Lead'}, {method:'calendly', listing: L.mls});
       zbTrack('book_call_scheduled', {name:'Schedule'}, {method:'calendly', listing: L.mls});
     }
