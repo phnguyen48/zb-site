@@ -32,7 +32,8 @@ window.LISTING = {
   openHouses: [],   // e.g. {label: 'Sat, Oct 10 · 2–4 PM', ends: '2026-10-10T16:00:00-07:00'}
   // Monthly payment estimate (visitors can change down payment, rate and term)
   payment: {
-    rate: 7.28, rateNote: 'Freddie Mac 30-year average, Oct 1, 2026',
+    // Backup rate, only used if /rates.json (refreshed daily) can't be loaded
+    rate: 7.40, rateNote: 'Freddie Mac 30-year average, week of Oct 8, 2026',
     downPct: 20, termYears: 30,
     taxRatePct: 1.2,          // Santa Clara County property tax, approx. % of price per year
     insurancePerYear: 3000,   // homeowners insurance estimate
@@ -380,7 +381,16 @@ body.lock{overflow:hidden}
   // Monthly payment estimate
   (function(){
     var M = L.payment; if (!M){ $('#payBox').hidden = true; return; }
-    var down = $('#pDown'), rate = $('#pRate'), term = $('#pTerm'), used = false;
+    var down = $('#pDown'), rate = $('#pRate'), term = $('#pTerm'), used = false, rateTyped = false;
+    var live = null;  // latest rates from /rates.json (updated daily)
+    var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function note(){
+      if (!live) return M.rateNote;
+      var d = live.week_of.split('-');
+      return 'Freddie Mac ' + term.value + '-year average, week of ' + MONTHS[+d[1]-1] + ' ' + (+d[2]) + ', ' + d[0];
+    }
+    function disc(){ var src = (rateTyped && live) ? 'the rate you entered (the ' + note() + ' is ' + marketRate() + '%)' : 'the ' + note(); $('#payDisc').textContent = 'Estimate only, not a loan offer. Rate shown is ' + src + '; your rate depends on your credit, loan type and lender. Property tax approx. ' + M.taxRatePct + '% of price; insurance is an estimate' + (M.hoaPerMonth ? '' : '; no HOA') + '.'; }
+    function marketRate(){ return live ? (term.value === '15' ? live.rate15 : live.rate30) : null; }
     down.value = M.downPct; rate.value = M.rate; term.value = String(M.termYears); $('#pPrice').value = fmt(L.price);
     var m = function(n){ return '$' + Math.round(n).toLocaleString('en-US'); };
     function calc(){
@@ -398,8 +408,15 @@ body.lock{overflow:hidden}
       $('#downAmt').textContent = '(' + m(L.price * dp / 100) + ')';
     }
     function changed(){ calc(); if (!used){ used = true; zbTrack('payment_calc_use', {name:'PaymentCalcUse', custom:true}, {listing: L.mls}); } }
+    rate.addEventListener('input', function(){ rateTyped = true; disc(); });
+    term.addEventListener('change', function(){ if (!rateTyped && marketRate()) rate.value = marketRate(); disc(); });
     [down, rate, term].forEach(function(el){ el.addEventListener('input', changed); el.addEventListener('change', changed); });
-    $('#payDisc').textContent = 'Estimate only, not a loan offer. Rate shown is the ' + M.rateNote + '; your rate depends on your credit, loan type and lender. Property tax approx. ' + M.taxRatePct + '% of price; insurance is an estimate' + (M.hoaPerMonth ? '' : '; no HOA') + '.';
+    disc();
+    // Use the latest weekly average if available (falls back to the rate written above)
+    if (window.fetch) fetch('/rates.json', {cache:'no-cache'}).then(function(r){ if (!r.ok) throw r; return r.json(); }).then(function(j){
+      if (!(j && j.rate30 > 1 && j.rate30 < 20 && j.rate15 > 1 && j.rate15 < 20 && j.week_of)) return;
+      live = j; if (!rateTyped) rate.value = marketRate(); disc(); calc();
+    }).catch(function(){});
     $('#payBox').addEventListener('toggle', function(){ if (this.open) zbTrack('payment_calc_open', null, {listing: L.mls}); });
     $('#financeBtn').addEventListener('click', function(){
       zbTrack('financing_help_click', {name:'FinancingHelpClick', custom:true}, {listing: L.mls});

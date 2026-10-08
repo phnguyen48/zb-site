@@ -88,6 +88,15 @@ test.describe('Site-wide checks', () => {
     await ctx.close();
   });
 
+  test('mortgage rates file is valid', () => {
+    const r = JSON.parse(read('rates.json'));
+    for (const k of ['rate30', 'rate15']) {
+      expect(r[k], k).toBeGreaterThan(1);
+      expect(r[k], k).toBeLessThan(20);
+    }
+    expect(r.week_of).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
   test('market data file is valid and has Bay Area cities and ZIP codes', () => {
     const data = JSON.parse(read('market.json'));
     expect(Object.keys(data.cities).length).toBeGreaterThanOrEqual(20);

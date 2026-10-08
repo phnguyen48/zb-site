@@ -4,6 +4,8 @@
 - `market.json`: market numbers for every Bay Area city and ZIP code. **Created and updated automatically; don't edit it by hand.**
 - `scripts/update_market.py`: downloads Redfin's free market data and writes `market.json`
 - `.github/workflows/update-market.yml`: runs that script every day
+- `rates.json`: latest Freddie Mac mortgage rates for the listing pages' payment estimate. **Updated automatically every day; don't edit by hand.**
+- `scripts/update_rates.py` and `.github/workflows/update-rates.yml`: refresh `rates.json` every morning
 - `tests/`: automated checks that must pass before the site is published (see below)
 - `.github/workflows/deploy.yml`: runs the tests, then publishes the site
 

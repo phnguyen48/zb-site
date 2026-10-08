@@ -80,6 +80,16 @@ for (const slug of slugs) {
       await expect(page.locator('#bookModal')).not.toHaveClass(/open/);
     });
 
+    test('payment estimate uses the latest daily mortgage rates', async ({ page }) => {
+      const rates = JSON.parse(require('node:fs').readFileSync(require('node:path').join(__dirname, '..', 'rates.json'), 'utf8'));
+      await page.locator('#payBox summary').click();
+      await expect(page.locator('#pRate')).toHaveValue(String(rates.rate30));
+      await expect(page.locator('#payDisc')).toContainText('30-year average, week of');
+      await page.selectOption('#pTerm', '15');
+      await expect(page.locator('#pRate')).toHaveValue(String(rates.rate15));
+      await expect(page.locator('#payDisc')).toContainText('15-year average');
+    });
+
     test('monthly payment estimate works and leads to the tour form', async ({ page }) => {
       const total = page.locator('#payTotal');
       await expect(total).toHaveText(/^\$[\d,]+\/mo$/);
