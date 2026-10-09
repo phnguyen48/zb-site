@@ -143,7 +143,7 @@ test.describe('Homepage', () => {
   });
 
   test('animations: headline reads normally and the city strip scrolls', async ({ page }) => {
-    await expect(page.locator('h1')).toHaveText("Bay Area real estate, guided by someone who's in it with you.");
+    await expect(page.locator('h1')).toHaveText('Buy, sell and invest in the Bay Area with a local expert.');
     const track = page.locator('.marquee-track');
     const x = () => track.evaluate((e) => new DOMMatrix(getComputedStyle(e).transform).m41);
     const first = await x();

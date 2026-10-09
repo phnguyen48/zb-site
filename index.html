@@ -80,8 +80,10 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
 .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:12.5px;font-weight:650;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-2)}
 .eyebrow::before{content:"";width:28px;height:1.5px;background:currentColor}
 .hero .eyebrow{color:var(--gold)}
+.hero-eyebrow{display:block}
+@media (max-width:480px){.hero-eyebrow .eb-brokerage{display:none}}
 .hero h1{font-size:clamp(38px,5.2vw,64px);margin:22px 0 22px;color:#fff}
-.hero h1 em{font-style:italic;color:var(--gold-soft)}
+.hero h1 em{font-style:italic;color:var(--gold-soft);white-space:nowrap}
 .hero-sub{font-size:18px;color:rgba(255,255,255,.78);max-width:540px}
 .cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;margin-top:38px}
 .cta-stack{display:flex;flex-direction:column;align-items:center;gap:10px}
@@ -504,8 +506,8 @@ body.book-lock{overflow:hidden}
 <section class="hero" aria-labelledby="hero-title">
   <div class="wrap hero-grid">
     <div>
-      <span class="eyebrow">REALTOR® · Keller Williams Elevate</span>
-      <h1 id="hero-title">Bay Area real estate, guided by someone who's <em>in it with you.</em></h1>
+      <span class="eyebrow hero-eyebrow">Zach Belman · REALTOR®<span class="eb-brokerage"> · Keller Williams Elevate</span></span>
+      <h1 id="hero-title">Buy, sell and invest in the Bay Area with <em>a local expert.</em></h1>
       <script>(function(){var h=document.getElementById('hero-title'),i=0;(function walk(n){Array.prototype.slice.call(n.childNodes).forEach(function(c){if(c.nodeType===3){var f=document.createDocumentFragment();c.textContent.split(/(\s+)/).forEach(function(t){if(!t)return;if(/^\s+$/.test(t)){f.appendChild(document.createTextNode(t));return;}var o=document.createElement('span'),w=document.createElement('span');o.className='w';w.textContent=t;w.style.setProperty('--i',i++);o.appendChild(w);f.appendChild(o);});n.replaceChild(f,c);}else if(c.nodeType===1){walk(c);}});})(h);document.documentElement.style.setProperty('--hero-words',i);})();</script>
       <p class="hero-sub">Buying your first home, selling the one you've outgrown, or relocating anywhere from San Francisco to San Jose — get honest advice, sharp negotiation and a direct line to me from first call to closing.</p>
       <div class="cta-row">
