@@ -194,6 +194,7 @@ section{scroll-margin-top:calc(var(--header-h) - 1px)}
 .reviews-top .stars{color:var(--gold);font-size:20px;letter-spacing:2px}
 .reviews-top b{color:var(--navy);font-family:var(--serif);font-size:24px;font-weight:500}
 .reviews{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.review:first-child{grid-column:1/-1}
 .review{position:relative;background:#fff;border:1px solid var(--line);border-radius:20px;padding:40px 40px 34px;display:flex;flex-direction:column}
 .review::before{content:"\201C";position:absolute;top:8px;right:28px;font-family:var(--serif);font-size:120px;line-height:1;color:rgba(198,161,91,.22)}
 .review .stars{color:var(--gold);letter-spacing:3px;font-size:18px}
@@ -650,6 +651,11 @@ body.book-lock{overflow:hidden}
     </div>
     <div class="track stagger" id="track" tabindex="0" aria-label="Sold homes carousel" role="region">
       <article class="card">
+        <div class="card-media"><img decoding="async" width="900" height="599" src="img/sold-38288-paseo-padre-pkwy.jpg" alt="38288 Paseo Padre Pkwy, Fremont" loading="lazy"><span class="chip-sold">SOLD</span></div>
+        <div class="card-body"><div class="price">$930,000</div><div class="addr">38288 Paseo Padre Pkwy</div><div class="city">Fremont, CA</div>
+          <div class="tags"><span class="tag">Represented Buyer</span><span class="tag gold">First-time home buyer</span></div></div>
+      </article>
+      <article class="card">
         <div class="card-media"><img decoding="async" width="900" height="600" src="img/sold-1457-mercado-way.jpg" alt="1457 Mercado Way, San Jose" loading="lazy"><span class="chip-sold">SOLD</span></div>
         <div class="card-body"><div class="price">$1,360,000</div><div class="addr">1457 Mercado Way</div><div class="city">San Jose, CA</div>
           <div class="tags"><span class="tag">Represented Seller</span></div></div>
@@ -735,6 +741,15 @@ body.book-lock{overflow:hidden}
       <a class="link-arrow" href="https://www.zillow.com/profile/zachbelman" target="_blank" rel="noopener">See all reviews on Zillow <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
     </div>
     <div class="reviews stagger">
+      <figure class="review" style="margin:0">
+        <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+        <blockquote>We had an amazing experience working with Zach! They were incredibly helpful, professional, and supportive throughout the entire home-buying process. From answering all our questions to guiding us through every step, they made what could have been a stressful experience smooth and enjoyable. We highly recommend them to anyone looking to buy or sell a home. Thank you for making this journey such a wonderful experience!</blockquote>
+        <figcaption class="who">
+          <span class="avatar" aria-hidden="true">P</span>
+          <div><b>pra1391</b><span>Bought a single-family home · Parkmont, Fremont, CA</span></div>
+          <a class="src" href="https://www.zillow.com/profile/zachbelman" target="_blank" rel="noopener">Zillow ↗</a>
+        </figcaption>
+      </figure>
       <figure class="review" style="margin:0">
         <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
         <blockquote>We can’t say enough good things about working with Zach. We’d been on and off the home search for some time, and when we finally connected with him, everything just aligned. He made the entire process feel seamless from start to finish. Zach was easy to work with, fun, knowledgeable, and transparent every step of the way. His kindness, patience, and professionalism turned what could have been a stressful process into something genuinely exciting. We’re so grateful for his guidance in helping make a long-held dream a reality — we’d recommend him in a heartbeat!</blockquote>
